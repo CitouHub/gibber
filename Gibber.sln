@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibbler.Web", "Gibbler.Web\Gibbler.Web.csproj", "{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Web", "Gibber.Web\Gibber.Web.csproj", "{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbler.Data", "Gibbler.Data\Gibbler.Data.csproj", "{6FDC546A-F199-4E7D-BB03-9D8102492EE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Data", "Gibber.Data\Gibber.Data.csproj", "{6FDC546A-F199-4E7D-BB03-9D8102492EE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbler.Test", "Gibbler.Test\Gibbler.Test.csproj", "{5944BFBA-439A-47DE-8F84-41D002573F15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Test", "Gibber.Test\Gibber.Test.csproj", "{5944BFBA-439A-47DE-8F84-41D002573F15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbler.Service", "Gibbler.Service\Gibbler.Service.csproj", "{03F24B46-8E79-47DB-BD84-53CA4B1B0970}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Service", "Gibber.Service\Gibber.Service.csproj", "{03F24B46-8E79-47DB-BD84-53CA4B1B0970}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
