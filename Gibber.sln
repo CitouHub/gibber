@@ -5,11 +5,15 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Web", "Gibber.Web\Gibber.Web.csproj", "{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Data", "Gibber.Data\Gibber.Data.csproj", "{6FDC546A-F199-4E7D-BB03-9D8102492EE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Data", "Gibber.Data\Gibber.Data.csproj", "{6FDC546A-F199-4E7D-BB03-9D8102492EE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Test", "Gibber.Test\Gibber.Test.csproj", "{5944BFBA-439A-47DE-8F84-41D002573F15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Test", "Gibber.Test\Gibber.Test.csproj", "{5944BFBA-439A-47DE-8F84-41D002573F15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.Service", "Gibber.Service\Gibber.Service.csproj", "{03F24B46-8E79-47DB-BD84-53CA4B1B0970}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Service", "Gibber.Service\Gibber.Service.csproj", "{03F24B46-8E79-47DB-BD84-53CA4B1B0970}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Domain", "Gibber.Domain\Gibber.Domain.csproj", "{7846555F-DEB9-4103-B6A8-672CBCDE7E63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.API", "Gibber.API\Gibber.API.csproj", "{2DF25576-FE6A-4614-A45B-D20716D5178D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

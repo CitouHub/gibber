@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Gibber.Data\Gibber.Data.csproj" />
-    <ProjectReference Include="..\Gibber.Domain\Gibber.Domain.csproj" />
   </ItemGroup>
 
 </Project>
