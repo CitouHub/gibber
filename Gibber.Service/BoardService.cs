@@ -3,7 +3,7 @@ using Gibber.Data;
 using Gibber.Data.Extension;
 using Gibber.Domain;
 
-namespace Gibbler.Service
+namespace Gibber.Service
 {
     public interface IBoardService
     {

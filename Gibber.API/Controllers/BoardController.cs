@@ -1,9 +1,9 @@
 ﻿using Gibber.API.Infrastructure;
 using Gibber.Domain;
-using Gibbler.Service;
+using Gibber.Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gibbler.API.Controllers
+namespace Gibber.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -21,22 +21,38 @@ namespace Gibbler.API.Controllers
         }
 
         [HttpGet("cell/{x}/{y}/{dx}/{dy}")]
-        public async Task<List<BoardCellDTO>> GetBoardCellsAsync(long x, long y, short dx, short dy)
+        public async Task<IActionResult> GetBoardCellsAsync(long x, long y, short dx, short dy)
         {
-            _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
-            var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
-            return boardCells;
+            if(dx > 0 && dy > 0)
+            {
+                _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
+                var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
+                return Ok(boardCells);
+            } 
+            else
+            {
+                return BadRequest($"dx:{dy} and dy:{dy} must be greater then 0");
+            }
         }
 
         [HttpPut("cell")]
-        public void AddBoardCells(List<BoardCellDTO> boardCells)
+        public IActionResult AddBoardCells(List<BoardCellDTO> boardCells)
         {
-            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-            foreach (var boardCell in boardCells)
+            if(boardCells.Any())
             {
-                boardCell.Source = remoteIpAddress ?? "Unknown";
-                _addBoardCellQueue.Enqueue(boardCell);
-                _logger.LogDebug($"Queued {boardCell} to be added to board");
+                var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                foreach (var boardCell in boardCells)
+                {
+                    boardCell.Source = remoteIpAddress ?? "Unknown";
+                    _addBoardCellQueue.Enqueue(boardCell);
+                    _logger.LogDebug($"Queued {boardCell} to be added to board");
+                }
+
+                return Ok();
+            }
+            else
+            {
+                return BadRequest($"List contains no elements");
             }
         }
     }

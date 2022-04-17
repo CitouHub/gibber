@@ -1,22 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Gibbler.Web.Controllers
+namespace Gibber.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AppSettingsController : ControllerBase
+    [Route("api/[controller]")]
+    public class AppSettingsController : Controller
     {
-        private readonly ILogger<AppSettingsController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public AppSettingsController(ILogger<AppSettingsController> logger)
+        public AppSettingsController(IConfiguration configuration)
         {
-            _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpGet]
-        public Dictionary<string, string> Get()
+        public Dictionary<string, string> GetPublicAppSettings()
         {
-            throw new NotImplementedException();
+            var appSettings = new Dictionary<string, string>
+            {
+                { "API:Version", _configuration.GetValue<string>("API:Version") },
+                { "API:BaseURL", _configuration.GetValue<string>("API:BaseURL") },
+            };
+
+            return appSettings;
         }
     }
 }

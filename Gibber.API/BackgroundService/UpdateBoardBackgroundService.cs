@@ -1,5 +1,5 @@
 ﻿using Gibber.API.Infrastructure;
-using Gibbler.Service;
+using Gibber.Service;
 
 namespace Gibber.API.BackgroundService
 {

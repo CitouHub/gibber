@@ -1,16 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState} from 'react';
 import { Route } from 'react-router';
-import Layout from './components/layout';
-import Home from './components/home';
+import Config from './util/config';
+import AppSettingsService from './service/appsettings.service';
+import Layout from './view/layout';
+import Home from './view/home';
 
 import './custom.css'
 
 const App = () => {
-    return (
-        <Layout>
-            <Route exact path='/' component={Home} />
-        </Layout>
-    );
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        AppSettingsService.get().then((result) => {
+            Config.setApplicationSettings(result);
+            setLoading(false);
+        });
+    }, []);
+
+    if (!loading) {
+        return (
+            <Layout>
+                <Route exact path='/' component={Home} />
+            </Layout>
+        );
+    } else {
+        return (<p>Loading...</p>);
+    }
 }
 
 export default App;

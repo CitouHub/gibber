@@ -1,14 +1,23 @@
-/* Provide sufficient contrast against white background */
+html, body {
+    margin: 0px;
+    height: 100%;
+    overflow: hidden
+}
+
 a {
-  color: #0366d6;
+    color: #0366d6;
 }
 
 code {
-  color: #E01A76;
+    color: #E01A76;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.full-size {
+    height: 100%;
 }

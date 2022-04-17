@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Gibbler.Test
+namespace Gibber.Test
 {
     public class UnitTest1
     {

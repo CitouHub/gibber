@@ -3,7 +3,7 @@ using Gibber.API.BackgroundService;
 using Gibber.API.Infrastructure;
 using Gibber.Data;
 using Gibber.Domain;
-using Gibbler.Service;
+using Gibber.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -44,7 +44,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 app.MapControllers();
 

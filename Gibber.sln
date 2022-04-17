@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Service", "Gibber.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.Domain", "Gibber.Domain\Gibber.Domain.csproj", "{7846555F-DEB9-4103-B6A8-672CBCDE7E63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibber.API", "Gibber.API\Gibber.API.csproj", "{2DF25576-FE6A-4614-A45B-D20716D5178D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gibber.API", "Gibber.API\Gibber.API.csproj", "{2DF25576-FE6A-4614-A45B-D20716D5178D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
