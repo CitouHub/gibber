@@ -1,9 +1,10 @@
 import React, { useEffect, useState} from 'react';
 import { Route } from 'react-router';
-import Config from './util/config';
-import AppSettingsService from './service/appsettings.service';
 import Layout from './view/layout';
 import Home from './view/home';
+
+import * as Config from './util/config';
+import * as AppSettingsService from './service/appsettings.service';
 
 import './custom.css'
 

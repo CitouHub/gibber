@@ -1,4 +1,4 @@
-﻿export const renderSettings = {
+export const renderSettings = {
     minZoomLevel: 8,
     maxZoomLevel: 100,
     deltaZoomLevel: 4,

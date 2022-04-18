@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWindowSize } from '../util/use.windowsize';
 import { renderSettings } from '../setting/setting.render';
-import BoardService from '../service/board.service';
 import Board from '../component/board';
+
+import * as BoardService from '../service/board.service';
 
 const Home = () => {
     const [dimension, setDimension] = useState({ columns: 0, rows: 0 });
@@ -12,22 +13,7 @@ const Home = () => {
     const content = useRef();
     const windowSize = useWindowSize();
 
-    const handleZoom = useCallback(e => {
-        if (e.deltaY > 0) { // Zoom out
-            if (renderSettings.zoomLevel > renderSettings.minZoomLevel) {
-                renderSettings.zoomLevel = renderSettings.zoomLevel - renderSettings.deltaZoomLevel;
-                updateBoardFrame();
-            }
-        }
-        else if (e.deltaY < 0) { // Zoom out
-            if (renderSettings.zoomLevel < renderSettings.maxZoomLevel) {
-                renderSettings.zoomLevel = renderSettings.zoomLevel + renderSettings.deltaZoomLevel;
-                updateBoardFrame();
-            }
-        }
-    }, [renderSettings.zoomLevel]);
-
-    const updateBoardFrame = () => {
+    const updateBoardFrame = useCallback(() => {
         if (content.current) {
             let startX = 0;
             let startY = 0;
@@ -50,7 +36,22 @@ const Home = () => {
                 });
             }
         }
-    }
+    }, [dimension.columns, dimension.rows])
+
+    const handleZoom = useCallback(e => {
+        if (e.deltaY > 0) { // Zoom out
+            if (renderSettings.zoomLevel > renderSettings.minZoomLevel) {
+                renderSettings.zoomLevel = renderSettings.zoomLevel - renderSettings.deltaZoomLevel;
+                updateBoardFrame();
+            }
+        }
+        else if (e.deltaY < 0) { // Zoom out
+            if (renderSettings.zoomLevel < renderSettings.maxZoomLevel) {
+                renderSettings.zoomLevel = renderSettings.zoomLevel + renderSettings.deltaZoomLevel;
+                updateBoardFrame();
+            }
+        }
+    }, [updateBoardFrame]);
 
     const getVisibleBoard = () => {
         let visibleBoard = board.filter(_ =>
@@ -64,18 +65,16 @@ const Home = () => {
     }
 
     const saveChanges = (boardCells) => {
-        console.log(boardCells);
         boardCells.forEach(_ => {
             _.x = _.vx + boardFrame.ix;
             _.y = _.vy + boardFrame.iy;
         });
-        console.log(boardCells);
         BoardService.saveBoardCells(boardCells);
     }
 
     useEffect(() => {
         updateBoardFrame();
-    }, [windowSize]);
+    }, [windowSize, updateBoardFrame]);
 
     useEffect(() => {
         if (boardFrame.dx > 0 && boardFrame.dy > 0) {
@@ -91,7 +90,7 @@ const Home = () => {
         return () => {
             window.removeEventListener("wheel", handleZoom);
         };
-    }, []);
+    }, [handleZoom]);
 
     return (
         <div className='full-size' ref={content}>

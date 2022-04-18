@@ -14,7 +14,16 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
 
     let caretLit = false;
 
-    const updateBoard = () => {
+    const clearBoardCell = useCallback((x, y) => {
+        var ctx = canvasRef.current.getContext("2d");
+        ctx.clearRect(
+            x * (zoomLevel * renderSettings.widthFactor),
+            y * zoomLevel - 1,
+            zoomLevel * renderSettings.widthFactor,
+            zoomLevel + 1);
+    }, [zoomLevel])
+
+    const updateBoard = useCallback(() => {
         var changedCells = board.filter(_ => _.r === false);
 
         if (changedCells.length > 0) {
@@ -29,25 +38,16 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
                 _.r = true;
             });
         }
-    };
+    }, [zoomLevel, clearBoardCell])
 
-    const clearBoardCell = (x, y) => {
-        var ctx = canvasRef.current.getContext("2d");
-        ctx.clearRect(
-            x * (zoomLevel * renderSettings.widthFactor),
-            y * zoomLevel - 1,
-            zoomLevel * renderSettings.widthFactor,
-            zoomLevel + 1);
-    }
-
-    const clearBoard = () => {
+    const clearBoard = useCallback(() => {
         var ctx = canvasRef.current.getContext("2d");
         ctx.clearRect(0, 0,
             columns * zoomLevel * renderSettings.widthFactor,
             rows * renderSettings.zoomLevel);
-    }
+    }, [columns, rows, zoomLevel])
 
-    const updateBoardCell = (x, y, newValue) => {
+    const updateBoardCell = useCallback((x, y, newValue) => {
         board.forEach(_ => {
             if (_.vx === x && _.vy === y) {
                 _.l = newValue ?? _.l;
@@ -57,12 +57,12 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
         });
 
         updateBoard();
-    }
+    }, [updateBoard]);
 
-    const flushSaveBuffer = () => {
+    const flushSaveBuffer = useCallback(() => {
         saveChanges(saveBuffer);
         saveBuffer = [];
-    }
+    }, [saveChanges])
 
     const selectPosition = (e) => {
         var x = Math.floor(e.clientX / (zoomLevel * renderSettings.widthFactor));
@@ -70,16 +70,28 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
         updatePosition(x, y);
     }
 
-    const updatePosition = (x, y) => {
+    const renderCaret = useCallback((x, y) => {
+        var ctx = canvasRef.current.getContext("2d");
+        Caret(ctx, x * (zoomLevel * renderSettings.widthFactor), y * zoomLevel, zoomLevel);
+    }, [zoomLevel])
+
+    const updatePosition = useCallback((x, y) => {
         updateBoardCell(position.x, position.y);
         position.x = x;
         position.y = y;
         renderCaret(position.x, position.y);
-    }
+    }, [updateBoardCell, renderCaret])
 
-    const renderCaret = (x, y) => {
-        var ctx = canvasRef.current.getContext("2d");
-        Caret(ctx, x * (zoomLevel * renderSettings.widthFactor), y * zoomLevel, zoomLevel);
+    const blinkCaret = () => {
+        if (canvasRef.current) {
+            if (caretLit === true) {
+                updateBoardCell(position.x, position.y);
+            } else {
+                renderCaret(position.x, position.y);
+            }
+
+            caretLit = !caretLit;
+        }
     }
 
     const getNewLinePosition = (x, y) => {
@@ -95,6 +107,29 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
             }
         }
     }
+
+    const addBoardCellToSaveBuffer = useCallback((x, y) => {
+        var boardCell = board.find(_ => _.vx === x && _.vy === y);
+        saveBuffer.push(boardCell);
+        clearTimeout(saveTimer);
+        if (saveBuffer.length >= saveSettings.saveBufferMaxSize) {
+            flushSaveBuffer();
+        } else {
+            saveTimer = setTimeout(() => flushSaveBuffer(), saveSettings.saveTimeTrigger)
+        }
+    }, [flushSaveBuffer])
+
+    const getBoardCell = useCallback((index) => {
+        let visibleX = index % columns;
+        let visibleY = Math.floor(index / columns);
+        let visibleBoardCell = visibleBoard.find(_ => _.vx === visibleX && _.vy === visibleY);
+        return {
+            vx: visibleX,
+            vy: visibleY,
+            l: visibleBoardCell?.l ?? '',
+            r: visibleBoardCell?.l !== undefined ? false : true
+        }
+    }, [columns, visibleBoard])
 
     const handleKeyDown = useCallback(e => {
         if (e.keyCode === 37) { //Left arrow
@@ -116,37 +151,14 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
             addBoardCellToSaveBuffer(position.x, position.y);
             updatePosition(position.x + 1, position.y);
         }
-    }, [board]);
-
-    const addBoardCellToSaveBuffer = (x, y) => {
-        var boardCell = board.find(_ => _.vx === x && _.vy === y);
-        saveBuffer.push(boardCell);
-        clearTimeout(saveTimer);
-        if (saveBuffer.length >= saveSettings.saveBufferMaxSize) {
-            flushSaveBuffer();
-        } else {
-            saveTimer = setTimeout(() => flushSaveBuffer(), saveSettings.saveTimeTrigger)
-        }
-    }
-
-    const getBoardCell = (index) => {
-        let visibleX = index % columns;
-        let visibleY = Math.floor(index / columns);
-        let visibleBoardCell = visibleBoard.find(_ => _.vx === visibleX && _.vy === visibleY);
-        return {
-            vx: visibleX,
-            vy: visibleY,
-            l: visibleBoardCell?.l ?? '',
-            r: visibleBoardCell?.l !== undefined ? false : true
-        }
-    }
+    }, [addBoardCellToSaveBuffer, updateBoardCell, updatePosition]);
 
     useEffect(() => {
         board = Array.from({ length: columns * rows }, (_, i) => (getBoardCell(i)));
         position = { x: Math.floor(columns / 2), y: Math.floor(rows / 2) };
         clearBoard();
         updateBoard();
-    }, [visibleBoard]);
+    }, [columns, rows, getBoardCell, clearBoard, updateBoard]);
 
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
@@ -154,18 +166,6 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [handleKeyDown]);
-
-    const blinkCaret = () => {
-        if (canvasRef.current) {
-            if (caretLit === true) {
-                updateBoardCell(position.x, position.y);
-            } else {
-                renderCaret(position.x, position.y);
-            }
-
-            caretLit = !caretLit;
-        }
-    }
 
     useInterval(blinkCaret, 300);
 

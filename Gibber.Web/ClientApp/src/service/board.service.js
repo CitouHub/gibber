@@ -1,17 +1,19 @@
-﻿import Request from "../util/request.handler"
+import * as Request from "../util/request.handler"
 
-export default {
-    getBoardCells: async (x, y, dx, dy) => await Request.send({
+export async function getBoardCells(x, y, dx, dy) {
+    return await Request.send({
         url: `board/cell/${x}/${y}/${dx}/${dy}`,
         method: 'GET'
     }).then((response) => {
         return Request.handleResponse(response)
-    }),
-    saveBoardCells: async (boardCells) => await Request.send({
+    });
+}
+export async function saveBoardCells(boardCells) {
+    return await Request.send({
         url: `board/cell`,
         data: boardCells,
         method: 'PUT'
     }).then((response) => {
         return Request.handleResponse(response)
-    }),
+    });
 }
