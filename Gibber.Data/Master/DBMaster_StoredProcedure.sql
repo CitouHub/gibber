@@ -18,6 +18,97 @@ AS
 BEGIN
 	SET NOCOUNT ON
 
-	SELECT X, Y, Letter FROM BoardCell WHERE X >= @X AND X <= @X + @DX AND Y >= @Y AND Y <= @Y + @DY
+	SELECT X, Y, UserId, Letter FROM BoardCell WHERE X >= @X AND X <= @X + @DX AND Y >= @Y AND Y <= @Y + @DY
+END
+GO
+
+IF OBJECTPROPERTY(object_id('dbo.sp_getBoardCellState'), N'IsProcedure') = 1 DROP PROCEDURE [dbo].[sp_setBoardCellState]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_getBoardCellState]
+-- =====================================================================
+-- Author:			Rikard Gustafsson
+-- Create date:		2022-04-18
+-- Description:		
+-- =====================================================================
+	@X BIGINT,
+	@Y BIGINT,
+	@UserId NVARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	DECLARE @State TINYINT
+	DECLARE @ExistingBoardCellUserId NVARCHAR(50)
+	SET @State = 3 --Locked
+	SET @ExistingBoardCellUserId = (SELECT UserId FROM BoardCell WHERE X = @X AND Y = @Y)
+
+	IF(@ExistingBoardCellUserId IS NULL) 
+	BEGIN
+		SET @State = 1 --Can add
+	END
+	ELSE IF(@ExistingBoardCellUserId = @UserId)
+	BEGIN
+		SET @State = 2 --Can update
+	END
+
+	SELECT @State AS Result
+END
+GO
+
+IF OBJECTPROPERTY(object_id('dbo.sp_addBoardCell'), N'IsProcedure') = 1 DROP PROCEDURE [dbo].[sp_addBoardCell]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_addBoardCell]
+-- =====================================================================
+-- Author:			Rikard Gustafsson
+-- Create date:		2022-04-18
+-- Description:		
+-- =====================================================================
+	@X BIGINT,
+	@Y BIGINT,
+	@UserId NVARCHAR(50),
+	@Letter NVARCHAR(1)
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	INSERT INTO BoardCell(X, Y, UserId, Letter) VALUES (@X, @Y, @UserId, @Letter)
+
+	SELECT CAST(1 AS BIT) AS Result
+END
+GO
+
+IF OBJECTPROPERTY(object_id('dbo.sp_updateBoardCell'), N'IsProcedure') = 1 DROP PROCEDURE [dbo].[sp_updateBoardCell]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_updateBoardCell]
+-- =====================================================================
+-- Author:			Rikard Gustafsson
+-- Create date:		2022-04-18
+-- Description:		
+-- =====================================================================
+	@X BIGINT,
+	@Y BIGINT,
+	@Letter NVARCHAR(1)
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	UPDATE BoardCell SET
+		UpdateDate = GETUTCDATE(),
+		Letter = @Letter
+	WHERE X = @X AND Y = @Y
+
+	SELECT CAST(1 AS BIT) AS Result
 END
 GO

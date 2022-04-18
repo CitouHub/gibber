@@ -11,13 +11,13 @@ namespace Gibber.API.Controllers
     {
         private readonly ILogger<BoardController> _logger;
         private readonly IBoardService _boardService;
-        private readonly IAddBoardCellQueue _addBoardCellQueue;
+        private readonly ISetBoardCellQueue _setBoardCellQueue;
 
-        public BoardController(ILogger<BoardController> logger, IBoardService boardService, IAddBoardCellQueue addBoardCellQueue)
+        public BoardController(ILogger<BoardController> logger, IBoardService boardService, ISetBoardCellQueue setBoardCellQueue)
         {
             _logger = logger;
             _boardService = boardService;
-            _addBoardCellQueue = addBoardCellQueue;
+            _setBoardCellQueue = setBoardCellQueue;
         }
 
         [HttpGet("cell/{x}/{y}/{dx}/{dy}")]
@@ -27,6 +27,7 @@ namespace Gibber.API.Controllers
             {
                 _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
                 var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
+
                 return Ok(boardCells);
             } 
             else
@@ -35,25 +36,21 @@ namespace Gibber.API.Controllers
             }
         }
 
-        [HttpPut("cell")]
-        public IActionResult AddBoardCells(List<BoardCellDTO> boardCells)
+        [HttpPut("cell/{userId}")]
+        public IActionResult AddBoardCells([FromBody] List<BoardCellDTO> boardCells, string userId)
         {
-            if(boardCells.Any())
+            _logger.LogDebug($"Request to queue {boardCells.Count} board cell for add");
+            if (boardCells.Any())
             {
-                var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 foreach (var boardCell in boardCells)
                 {
-                    boardCell.Source = remoteIpAddress ?? "Unknown";
-                    _addBoardCellQueue.Enqueue(boardCell);
-                    _logger.LogDebug($"Queued {boardCell} to be added to board");
+                    boardCell.UserId = userId;
+                    _setBoardCellQueue.Enqueue(boardCell);
+                    _logger.LogDebug($"Queued {boardCell} to be set for the board");
                 }
+            }
 
-                return Ok();
-            }
-            else
-            {
-                return BadRequest($"List contains no elements");
-            }
+            return Ok();
         }
     }
 }

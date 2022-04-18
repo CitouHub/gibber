@@ -47,7 +47,7 @@ namespace Gibber.Data
                     .IsUnicode(false)
                     .IsFixedLength();
 
-                entity.Property(e => e.Source).HasMaxLength(500);
+                entity.Property(e => e.UserId).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -8,12 +8,8 @@ namespace Gibber.Domain
     {
         public AutoMapperProfile()
         {
-            CreateMap<BoardCell, BoardCellDTO>()
-                .ForMember(dest => dest.L, opt => opt.MapFrom(src => src.Letter))
-                .ReverseMap()
-                .ForMember(dest => dest.Letter, opt => opt.MapFrom(src => src.L));
-            CreateMap<sp_getBoardCells_Result, BoardCellDTO>()
-                .ForMember(dest => dest.L, opt => opt.MapFrom(src => src.Letter));
+            CreateMap<BoardCell, BoardCellDTO>().ReverseMap();
+            CreateMap<sp_getBoardCells_Result, BoardCellDTO>();
         }
     }
 }

@@ -3,36 +3,36 @@ using System.Collections.Concurrent;
 
 namespace Gibber.API.Infrastructure
 {
-    public interface IAddBoardCellQueue
+    public interface ISetBoardCellQueue
     {
         void Enqueue(BoardCellDTO boardCell);
         Task<BoardCellDTO?> DequeueAsync(CancellationToken cancellationToken);
     }
 
-    public class AddBoardCellQueue : IAddBoardCellQueue
+    public class SetBoardCellQueue : ISetBoardCellQueue
     {
-        private readonly ILogger<AddBoardCellQueue> _logger;
-        private readonly ConcurrentQueue<BoardCellDTO> _addBoardCellQueue;
+        private readonly ILogger<SetBoardCellQueue> _logger;
+        private readonly ConcurrentQueue<BoardCellDTO> _setBoardCellQueue;
         private readonly SemaphoreSlim _queueSignal;
 
-        public AddBoardCellQueue(ILogger<AddBoardCellQueue> logger)
+        public SetBoardCellQueue(ILogger<SetBoardCellQueue> logger)
         {
             _logger = logger;
-            _addBoardCellQueue = new ConcurrentQueue<BoardCellDTO>();
+            _setBoardCellQueue = new ConcurrentQueue<BoardCellDTO>();
             _queueSignal = new SemaphoreSlim(0);
             _logger.LogDebug($"Instantiated");
         }
 
         public void Enqueue(BoardCellDTO boardCell)
         {
-            _addBoardCellQueue.Enqueue(boardCell);
+            _setBoardCellQueue.Enqueue(boardCell);
             _queueSignal.Release();
         }
 
         public async Task<BoardCellDTO?> DequeueAsync(CancellationToken cancellationToken)
         {
             await _queueSignal.WaitAsync(cancellationToken);
-            _addBoardCellQueue.TryDequeue(out var boardCell);
+            _setBoardCellQueue.TryDequeue(out var boardCell);
 
             return boardCell;
         }

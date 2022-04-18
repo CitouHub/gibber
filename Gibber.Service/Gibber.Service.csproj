@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Gibber.Common\Gibber.Common.csproj" />
     <ProjectReference Include="..\Gibber.Data\Gibber.Data.csproj" />
     <ProjectReference Include="..\Gibber.Domain\Gibber.Domain.csproj" />
   </ItemGroup>

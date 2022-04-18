@@ -21,3 +21,11 @@ code {
 .full-size {
     height: 100%;
 }
+
+.canvas-mouse-normal {
+    cursor: auto;
+}
+
+.canvas-mouse-grab {
+    cursor: grabbing;
+}

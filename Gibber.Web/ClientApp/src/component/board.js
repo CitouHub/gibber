@@ -7,12 +7,16 @@ import { saveSettings } from '../setting/setting.save';
 let board = [];
 let saveBuffer = [];
 let saveTimer = {};
-let position = { x: 0, y: 0 };
+let caret = { x: 0, y: 0, lit: false };
 
-const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
+const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges }) => {
     const canvasRef = useRef();
 
-    let caretLit = false;
+    caret = {
+        x: Math.round(columns / 2),
+        y: Math.round(rows / 2),
+        lit: false
+    };
 
     const clearBoardCell = useCallback((x, y) => {
         var ctx = canvasRef.current.getContext("2d");
@@ -76,21 +80,22 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
     }, [zoomLevel])
 
     const updatePosition = useCallback((x, y) => {
-        updateBoardCell(position.x, position.y);
-        position.x = x;
-        position.y = y;
-        renderCaret(position.x, position.y);
-    }, [updateBoardCell, renderCaret])
+        updateBoardCell(caret.x, caret.y);
+        caret.x = x;
+        caret.y = y;
+        document.title = `gibber ${caret.x + boardFrame.ix} : ${caret.y + boardFrame.iy}`;
+        renderCaret(caret.x, caret.y);
+    }, [updateBoardCell, boardFrame, renderCaret])
 
     const blinkCaret = () => {
         if (canvasRef.current) {
-            if (caretLit === true) {
-                updateBoardCell(position.x, position.y);
+            if (caret.lit === true) {
+                updateBoardCell(caret.x, caret.y);
             } else {
-                renderCaret(position.x, position.y);
+                renderCaret(caret.x, caret.y);
             }
 
-            caretLit = !caretLit;
+            caret.lit = !caret.lit;
         }
     }
 
@@ -133,29 +138,28 @@ const Board = ({ columns, rows, zoomLevel, visibleBoard, saveChanges }) => {
 
     const handleKeyDown = useCallback(e => {
         if (e.keyCode === 37) { //Left arrow
-            updatePosition(position.x - 1, position.y);
+            updatePosition(caret.x - 1, caret.y);
         } else if (e.keyCode === 38) { //Up arrow
-            updatePosition(position.x, position.y - 1);
+            updatePosition(caret.x, caret.y - 1);
         } else if (e.keyCode === 39) { //Right arrow
-            updatePosition(position.x + 1, position.y);
+            updatePosition(caret.x + 1, caret.y);
         } else if (e.keyCode === 40) { //Down arrow
-            updatePosition(position.x, position.y + 1);
+            updatePosition(caret.x, caret.y + 1);
         } else if (e.keyCode === 8) { //Backspace
-            updateBoardCell(position.x - 1, position.y, '');
-            updatePosition(position.x - 1, position.y);
+            updateBoardCell(caret.x - 1, caret.y, '');
+            updatePosition(caret.x - 1, caret.y);
         } else if (e.keyCode === 13) { //Enter
-            var newLineX = getNewLinePosition(position.x, position.y);
-            updatePosition(newLineX, position.y + 1);
+            var newLineX = getNewLinePosition(caret.x, caret.y);
+            updatePosition(newLineX, caret.y + 1);
         } else if (e.key.length === 1) {
-            updateBoardCell(position.x, position.y, e.key);
-            addBoardCellToSaveBuffer(position.x, position.y);
-            updatePosition(position.x + 1, position.y);
+            updateBoardCell(caret.x, caret.y, e.key);
+            addBoardCellToSaveBuffer(caret.x, caret.y);
+            updatePosition(caret.x + 1, caret.y);
         }
     }, [addBoardCellToSaveBuffer, updateBoardCell, updatePosition]);
 
     useEffect(() => {
         board = Array.from({ length: columns * rows }, (_, i) => (getBoardCell(i)));
-        position = { x: Math.floor(columns / 2), y: Math.floor(rows / 2) };
         clearBoard();
         updateBoard();
     }, [columns, rows, getBoardCell, clearBoard, updateBoard]);

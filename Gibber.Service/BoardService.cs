@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Gibber.Common;
 using Gibber.Data;
 using Gibber.Data.Extension;
 using Gibber.Domain;
@@ -8,7 +9,7 @@ namespace Gibber.Service
     public interface IBoardService
     {
         Task<List<BoardCellDTO>> GetBoardCellsAsync(long x, long y, short dx, short dy);
-        Task<bool> AddBoardCellAsync(BoardCellDTO boardCell);
+        Task<bool> SetBoardCellAsync(BoardCellDTO boardCell);
     }
 
     public class BoardService : IBoardService
@@ -24,27 +25,23 @@ namespace Gibber.Service
 
         public async Task<List<BoardCellDTO>> GetBoardCellsAsync(long x, long y, short dx, short dy)
         {
-            var boardCells = await _context.sp_getBoardCells(x, y, dx, dy);
+            var boardCells = await _context.sp_getBoardCellsAsync(x, y, dx, dy);
 
             return _mapper.Map<List<BoardCellDTO>>(boardCells);
         }
 
-        public async Task<bool> AddBoardCellAsync(BoardCellDTO boardCellDto)
+        public async Task<bool> SetBoardCellAsync(BoardCellDTO boardCellDto)
         {
-            try
+            var boardCellState = (BoardCellState)await _context.sp_getBoardCellStateAsync(boardCellDto.X, boardCellDto.Y, boardCellDto.UserId);
+            switch (boardCellState)
             {
-                var boardCell = _mapper.Map<BoardCell>(boardCellDto);
-                boardCell.InsertDate = DateTime.UtcNow;
-
-                await _context.BoardCells.AddAsync(_mapper.Map<BoardCell>(boardCell));
-                await _context.SaveChangesAsync();
-
-                return true;
-            } 
-            catch
-            {
-                return false;
+                case BoardCellState.CanAdd:
+                    return await _context.sp_addBoardCellAsync(boardCellDto.X, boardCellDto.Y, boardCellDto.UserId, boardCellDto.Letter);
+                case BoardCellState.CanUpdate:
+                    return await _context.sp_updateBoardCellAsync(boardCellDto.X, boardCellDto.Y, boardCellDto.Letter);
             }
+
+            return false;
         }
     }
 }

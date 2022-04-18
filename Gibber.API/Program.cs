@@ -29,7 +29,7 @@ var mappingConfig = new MapperConfiguration(config =>
 });
 var mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
-builder.Services.AddSingleton<IAddBoardCellQueue, AddBoardCellQueue>();
+builder.Services.AddSingleton<ISetBoardCellQueue, SetBoardCellQueue>();
 builder.Services.AddScoped<IBoardService, BoardService>();
 builder.Services.AddHostedService<UpdateBoardBackgroundService>();
 
