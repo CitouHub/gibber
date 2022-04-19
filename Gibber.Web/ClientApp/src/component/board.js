@@ -1,15 +1,21 @@
-import React, { useEffect, useRef, useCallback } from 'react';
-import { Caret } from './caret'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import GoToDialog from './goto.dialog';
+import { Caret } from './caret';
 import { useInterval } from '../util/use.interval';
 import { renderSettings } from '../setting/setting.render';
 import { saveSettings } from '../setting/setting.save';
 
+import * as Config from '../util/config';
+
+let ctrlDown = false;
 let board = [];
 let saveBuffer = [];
 let saveTimer = {};
 let caret = { x: 0, y: 0, lit: false };
 
-const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges }) => {
+const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges, setBoardDragLocked, setBoardCenter }) => {
+    const [gotoOpen, setGoToOpen] = useState(false);
+
     const canvasRef = useRef();
 
     caret = {
@@ -80,12 +86,15 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
     }, [zoomLevel])
 
     const updatePosition = useCallback((x, y) => {
-        updateBoardCell(caret.x, caret.y);
-        caret.x = x;
-        caret.y = y;
-        document.title = `gibber ${caret.x + boardFrame.ix} : ${caret.y + boardFrame.iy}`;
-        renderCaret(caret.x, caret.y);
-    }, [updateBoardCell, boardFrame, renderCaret])
+        if (gotoOpen === false) {
+            updateBoardCell(caret.x, caret.y);
+            caret.x = x;
+            caret.y = y;
+            document.title = `gibber ${caret.x + boardFrame.ix} : ${caret.y + boardFrame.iy}`;
+            Config.setUserPosition(caret.x + boardFrame.ix, caret.y + boardFrame.iy);
+            renderCaret(caret.x, caret.y);
+        }
+    }, [gotoOpen, updateBoardCell, boardFrame, renderCaret])
 
     const blinkCaret = () => {
         if (canvasRef.current) {
@@ -131,32 +140,85 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
         return {
             vx: visibleX,
             vy: visibleY,
+            u: visibleBoardCell?.u ?? '',
             l: visibleBoardCell?.l ?? '',
             r: visibleBoardCell?.l !== undefined ? false : true
         }
     }, [columns, visibleBoard])
 
     const handleKeyDown = useCallback(e => {
-        if (e.keyCode === 37) { //Left arrow
-            updatePosition(caret.x - 1, caret.y);
-        } else if (e.keyCode === 38) { //Up arrow
-            updatePosition(caret.x, caret.y - 1);
-        } else if (e.keyCode === 39) { //Right arrow
-            updatePosition(caret.x + 1, caret.y);
-        } else if (e.keyCode === 40) { //Down arrow
-            updatePosition(caret.x, caret.y + 1);
-        } else if (e.keyCode === 8) { //Backspace
-            updateBoardCell(caret.x - 1, caret.y, '');
-            updatePosition(caret.x - 1, caret.y);
-        } else if (e.keyCode === 13) { //Enter
-            var newLineX = getNewLinePosition(caret.x, caret.y);
-            updatePosition(newLineX, caret.y + 1);
-        } else if (e.key.length === 1) {
-            updateBoardCell(caret.x, caret.y, e.key);
-            addBoardCellToSaveBuffer(caret.x, caret.y);
-            updatePosition(caret.x + 1, caret.y);
+        if (ctrlDown === false && gotoOpen === false) {
+            if (e.keyCode === 17) {
+                ctrlDown = true;
+            } else if (e.keyCode === 37) { //Left arrow
+                updatePosition(caret.x - 1, caret.y);
+            } else if (e.keyCode === 38) { //Up arrow
+                updatePosition(caret.x, caret.y - 1);
+            } else if (e.keyCode === 39) { //Right arrow
+                updatePosition(caret.x + 1, caret.y);
+            } else if (e.keyCode === 40) { //Down arrow
+                updatePosition(caret.x, caret.y + 1);
+            } else if (e.keyCode === 8) { //Backspace
+                if (canEraseBoardCell(caret.x, caret.y)) {
+                    updateBoardCell(caret.x - 1, caret.y, '');
+                }
+                updatePosition(caret.x - 1, caret.y);
+            } else if (e.keyCode === 13) { //Enter
+                let newLineX = getNewLinePosition(caret.x, caret.y);
+                updatePosition(newLineX, caret.y + 1);
+            } else if (e.key.length === 1) {
+                if (canEditBoardCell(caret.x, caret.y)) {
+                    updateBoardCell(caret.x, caret.y, e.key);
+                    addBoardCellToSaveBuffer(caret.x, caret.y);
+                }
+
+                updatePosition(caret.x + 1, caret.y);
+            }
+        } else if (e.key === 'g') {
+            e.preventDefault();
+            setBoardDragLocked(true);
+            setGoToOpen(true);
         }
-    }, [addBoardCellToSaveBuffer, updateBoardCell, updatePosition]);
+    }, [gotoOpen, addBoardCellToSaveBuffer, updateBoardCell, updatePosition, setBoardDragLocked]);
+
+    const handleKeyUp = useCallback((e) => {
+        if (e.keyCode === 17) {
+            ctrlDown = false;
+        }
+    }, []);
+
+    const canEraseBoardCell = (x, y) => {
+        let user = Config.getUser();
+        let boardCell = board.find(_ => _.x === x && _.y === y);
+        return user.id.endsWith(boardCell.u);
+    }
+
+    const canEditBoardCell = (x, y) => {
+        let user = Config.getUser();
+        let neighbourBoardCells = [
+            board.find(_ => _.vx === x - 1 && _.vy === y - 1),
+            board.find(_ => _.vx === x && _.vy === y - 1),
+            board.find(_ => _.vx === x + 1 && _.vy === y - 1),
+            board.find(_ => _.vx === x - 1 && _.vy === y),
+            board.find(_ => _.vx === x && _.vy === y),
+            board.find(_ => _.vx === x + 1 && _.vy === y),
+            board.find(_ => _.vx === x - 1 && _.vy === y + 1),
+            board.find(_ => _.vx === x && _.vy === y + 1),
+            board.find(_ => _.vx === x + 1 && _.vy === y + 1),
+        ];
+        return neighbourBoardCells.filter(_ => _.u !== undefined && _.u !== '' && user.id.endsWith(_.u) === false).length === 0;
+    }
+
+    const handleGoTo = (x, y) => {
+        setGoToOpen(false);
+        setBoardDragLocked(false);
+        setBoardCenter(x, y);
+    }
+
+    const handleCloseGoTo = () => {
+        setGoToOpen(false);
+        setBoardDragLocked(false);
+    }
 
     useEffect(() => {
         board = Array.from({ length: columns * rows }, (_, i) => (getBoardCell(i)));
@@ -166,15 +228,20 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
 
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyDown);
         };
-    }, [handleKeyDown]);
+    }, [handleKeyDown, handleKeyUp]);
 
     useInterval(blinkCaret, 300);
 
     return (
-        <canvas ref={canvasRef} width={columns * zoomLevel * renderSettings.widthFactor} height={rows * zoomLevel} onClick={selectPosition} />
+        <React.Fragment>
+            <canvas ref={canvasRef} width={columns * zoomLevel * renderSettings.widthFactor} height={rows * zoomLevel} onClick={selectPosition} />
+            <GoToDialog open={gotoOpen} handleGoTo={handleGoTo} handleClose={handleCloseGoTo} />
+        </React.Fragment>
     );
 }
 

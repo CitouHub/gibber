@@ -17,8 +17,8 @@ namespace Gibber.Web.Controllers
         {
             var appSettings = new Dictionary<string, string>
             {
-                { "API:Version", _configuration.GetValue<string>("API:Version") },
                 { "API:BaseURL", _configuration.GetValue<string>("API:BaseURL") },
+                { "User:IdLength", _configuration.GetValue<string>("User:IdLength") },
             };
 
             return appSettings;

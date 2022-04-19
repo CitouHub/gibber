@@ -2,13 +2,32 @@ export function setApplicationSettings(appSettings) {
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
 }
 
-export function getGibberUser() {
-    let gibberUser = localStorage.getItem('gibberUser');
-    if (!gibberUser) {
-        gibberUser = makeUserId();
-        localStorage.setItem('appSettings', gibberUser);
+export function setUserPosition(x, y) {
+    let user = getUser();
+    user.x = x;
+    user.y = y;
+    setUser(user);
+}
+
+export function setUser(user) {
+    localStorage.setItem('gibberUser', JSON.stringify(user));
+}
+
+export function getUser() {
+    let user = JSON.parse(localStorage.getItem('gibberUser'));
+    if (!user) {
+        user = {
+            x: 0,
+            y: 0,
+            id: makeUserId()
+        }
+        setUser(user);
     }
-    return gibberUser;
+    if (!user.id || user.id.length === 0) {
+        user.id = makeUserId();
+        setUser(user);
+    }
+    return user;
 }
 
 export function apiURL() {
@@ -23,7 +42,7 @@ export function version() {
 
 function makeUserId() {
     let appSettings = JSON.parse(localStorage.getItem('appSettings'));
-    let length = appSettings['UserIdLength']
+    let length = appSettings['User:IdLength']
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;

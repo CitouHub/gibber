@@ -3,6 +3,7 @@ import { useWindowSize } from '../util/use.windowsize';
 import { renderSettings } from '../setting/setting.render';
 import Board from '../component/board';
 
+import * as Config from '../util/config';
 import * as BoardService from '../service/board.service';
 
 let mouseDown = false;
@@ -10,8 +11,9 @@ let mouseDownX = 0;
 let mouseDownY = 0;
 let mouseMoveDx = 0;
 let mouseMoveDy = 0;
-let centerX = 0;
-let centerY = 0;
+let centerX = Config.getUser().x;
+let centerY = Config.getUser().y;
+let bordDragLocked = false;
 
 const Home = () => {
     const [dimension, setDimension] = useState({ columns: 0, rows: 0 });
@@ -70,7 +72,8 @@ const Home = () => {
                 board.push(_);
             }
         });
-        BoardService.saveBoardCells(boardCells);
+        let user = Config.getUser();
+        BoardService.saveBoardCells(boardCells, user.id);
     }
 
     useEffect(() => {
@@ -102,10 +105,12 @@ const Home = () => {
     }, [updateBoardFrame]);
 
     const handleMouseDown = useCallback((e) => {
-        mouseDown = true;
-        mouseDownX = e.clientX;
-        mouseDownY = e.clientY;
-        content.current.className = 'canvas-mouse-grab';
+        if (bordDragLocked === false) {
+            mouseDown = true;
+            mouseDownX = e.clientX;
+            mouseDownY = e.clientY;
+            content.current.className = 'canvas-mouse-grab';
+        }
     }, []);
 
     const handleMouseMove = useCallback((e) => {
@@ -129,6 +134,11 @@ const Home = () => {
         content.current.className = 'canvas-mouse-normal';
     }, []);
 
+    const setBoardCenter = (x,y) => {
+        console.log(x, y);
+        bordDragLocked = false;
+    }
+
     useEffect(() => {
         window.addEventListener("wheel", handleZoom);
         window.addEventListener("mousedown", handleMouseDown);
@@ -150,6 +160,8 @@ const Home = () => {
                 zoomLevel={renderSettings.zoomLevel}
                 boardFrame={boardFrame}
                 visibleBoard={getVisibleBoard()}
+                setBoardDragLocked={(locked) => bordDragLocked = locked}
+                setBoardCenter={setBoardCenter}
                 saveChanges={saveChanges}
             />}
         </div>

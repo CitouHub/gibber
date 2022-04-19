@@ -8,9 +8,9 @@ export async function getBoardCells(x, y, dx, dy) {
         return Request.handleResponse(response)
     });
 }
-export async function saveBoardCells(boardCells) {
+export async function saveBoardCells(boardCells, userId) {
     return await Request.send({
-        url: `board/cell`,
+        url: `board/cell/${userId}`,
         data: boardCells,
         method: 'PUT'
     }).then((response) => {

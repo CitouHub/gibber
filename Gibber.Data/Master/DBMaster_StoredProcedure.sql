@@ -18,11 +18,12 @@ AS
 BEGIN
 	SET NOCOUNT ON
 
-	SELECT X, Y, UserId, Letter FROM BoardCell WHERE X >= @X AND X <= @X + @DX AND Y >= @Y AND Y <= @Y + @DY
+	SELECT X, Y, RIGHT(UserId, 4) AS UserId, Letter 
+	FROM BoardCell WHERE X >= @X AND X <= @X + @DX AND Y >= @Y AND Y <= @Y + @DY
 END
 GO
 
-IF OBJECTPROPERTY(object_id('dbo.sp_getBoardCellState'), N'IsProcedure') = 1 DROP PROCEDURE [dbo].[sp_setBoardCellState]
+IF OBJECTPROPERTY(object_id('dbo.sp_getBoardCellState'), N'IsProcedure') = 1 DROP PROCEDURE [dbo].[sp_getBoardCellState]
 GO
 SET ANSI_NULLS ON
 GO
