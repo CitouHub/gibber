@@ -18,9 +18,10 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
 
     const canvasRef = useRef();
 
+    let user = Config.getUser();
     caret = {
-        x: Math.round(columns / 2),
-        y: Math.round(rows / 2),
+        x: user.vx,
+        y: user.vy,
         lit: false
     };
 
@@ -43,7 +44,7 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
                 ctx.font = `${zoomLevel * renderSettings.fontFactor}px Consolas`;
                 ctx.fillText(_.l, _.vx * (zoomLevel * renderSettings.widthFactor), (_.vy * zoomLevel) + zoomLevel * 0.75);
                 //ctx.beginPath();
-                //ctx.rect(_.x * (zoomLevel * renderSettings.widthFactor), (_.y * zoomLevel), zoomLevel * renderSettings.widthFactor, zoomLevel);
+                //ctx.rect(_.vx * (zoomLevel * renderSettings.widthFactor), (_.vy * zoomLevel), zoomLevel * renderSettings.widthFactor, zoomLevel);
                 //ctx.stroke();
                 _.r = true;
             });
@@ -91,7 +92,7 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
             caret.x = x;
             caret.y = y;
             document.title = `gibber ${caret.x + boardFrame.ix} : ${caret.y + boardFrame.iy}`;
-            Config.setUserPosition(caret.x + boardFrame.ix, caret.y + boardFrame.iy);
+            Config.setUserPosition(caret.x + boardFrame.ix, caret.y + boardFrame.iy, caret.x, caret.y);
             renderCaret(caret.x, caret.y);
         }
     }, [gotoOpen, updateBoardCell, boardFrame, renderCaret])
@@ -159,7 +160,7 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
             } else if (e.keyCode === 40) { //Down arrow
                 updatePosition(caret.x, caret.y + 1);
             } else if (e.keyCode === 8) { //Backspace
-                if (canEraseBoardCell(caret.x, caret.y)) {
+                if (canEraseBoardCell(caret.x - 1, caret.y)) {
                     updateBoardCell(caret.x - 1, caret.y, '');
                 }
                 updatePosition(caret.x - 1, caret.y);
@@ -189,23 +190,14 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
 
     const canEraseBoardCell = (x, y) => {
         let user = Config.getUser();
-        let boardCell = board.find(_ => _.x === x && _.y === y);
+        let boardCell = board.find(_ => _.vx === x && _.vy === y);
+        console.log(boardCell);
         return user.id.endsWith(boardCell.u);
     }
 
     const canEditBoardCell = (x, y) => {
         let user = Config.getUser();
-        let neighbourBoardCells = [
-            board.find(_ => _.vx === x - 1 && _.vy === y - 1),
-            board.find(_ => _.vx === x && _.vy === y - 1),
-            board.find(_ => _.vx === x + 1 && _.vy === y - 1),
-            board.find(_ => _.vx === x - 1 && _.vy === y),
-            board.find(_ => _.vx === x && _.vy === y),
-            board.find(_ => _.vx === x + 1 && _.vy === y),
-            board.find(_ => _.vx === x - 1 && _.vy === y + 1),
-            board.find(_ => _.vx === x && _.vy === y + 1),
-            board.find(_ => _.vx === x + 1 && _.vy === y + 1),
-        ];
+        let neighbourBoardCells = board.filter(_ => _.vx >= x - 1 && _.vx <= x + 1 && _.vy >= y - 1 && _.vy <= y + 1);
         return neighbourBoardCells.filter(_ => _.u !== undefined && _.u !== '' && user.id.endsWith(_.u) === false).length === 0;
     }
 
@@ -239,8 +231,15 @@ const Board = ({ columns, rows, zoomLevel, boardFrame, visibleBoard, saveChanges
 
     return (
         <React.Fragment>
-            <canvas ref={canvasRef} width={columns * zoomLevel * renderSettings.widthFactor} height={rows * zoomLevel} onClick={selectPosition} />
-            <GoToDialog open={gotoOpen} handleGoTo={handleGoTo} handleClose={handleCloseGoTo} />
+            <canvas
+                ref={canvasRef}
+                width={columns * zoomLevel * renderSettings.widthFactor}
+                height={rows * zoomLevel}
+                onClick={selectPosition} />
+            <GoToDialog
+                open={gotoOpen}
+                handleGoTo={handleGoTo}
+                handleClose={handleCloseGoTo} />
         </React.Fragment>
     );
 }

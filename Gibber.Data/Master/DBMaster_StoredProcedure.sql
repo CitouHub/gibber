@@ -47,13 +47,20 @@ BEGIN
 	SET @State = 3 --Locked
 	SET @ExistingBoardCellUserId = (SELECT UserId FROM BoardCell WHERE X = @X AND Y = @Y)
 
-	IF(@ExistingBoardCellUserId IS NULL) 
+	DECLARE @Occupied BIT
+	SET @Occupied = CAST(CASE WHEN EXISTS(SELECT TOP 1 X, Y FROM BoardCell WHERE UserId <> @UserId
+		AND X >= @X - 1 AND X >= @X + 1 AND Y >= @Y - 1 AND Y <= @Y + 1) THEN 1 ELSE 0 END AS BIT)
+
+	IF(@Occupied = 0)
 	BEGIN
-		SET @State = 1 --Can add
-	END
-	ELSE IF(@ExistingBoardCellUserId = @UserId)
-	BEGIN
-		SET @State = 2 --Can update
+		IF(NOT EXISTS(SELECT TOP 1 X, Y FROM BoardCell WHERE X = @X AND Y = @Y)) 
+		BEGIN
+			SET @State = 1 --Can add
+		END
+		ELSE 
+		BEGIN
+			SET @State = 2 --Can update
+		END
 	END
 
 	SELECT @State AS Result

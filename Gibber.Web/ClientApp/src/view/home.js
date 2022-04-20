@@ -6,6 +6,7 @@ import Board from '../component/board';
 import * as Config from '../util/config';
 import * as BoardService from '../service/board.service';
 
+let loading = false;
 let mouseDown = false;
 let mouseDownX = 0;
 let mouseDownY = 0;
@@ -81,13 +82,15 @@ const Home = () => {
     }, [windowSize, updateBoardFrame]);
 
     useEffect(() => {
-        if (boardFrame.dx > 0 && boardFrame.dy > 0 && mouseDown === false) {
+        if (boardFrame.dx > 0 && boardFrame.dy > 0 && mouseDown === false && loading === false) {
+            loading = true;
             BoardService.getBoardCells(boardFrame.ox, boardFrame.oy, boardFrame.dx, boardFrame.dy).then((result) => {
                 result.forEach(_ => _.r = false);
                 setBoard(result);
+                loading = false;
             });
         }
-    }, [boardFrame]);
+    }, [boardFrame, loading]);
 
     const handleZoom = useCallback((e) => {
         if (e.deltaY > 0) { // Zoom out
@@ -109,21 +112,30 @@ const Home = () => {
             mouseDown = true;
             mouseDownX = e.clientX;
             mouseDownY = e.clientY;
-            content.current.className = 'canvas-mouse-grab';
         }
     }, []);
 
     const handleMouseMove = useCallback((e) => {
         if (mouseDown === true) {
-            mouseMoveDx = Math.round((mouseDownX - e.clientX) / renderSettings.zoomLevel);
-            mouseMoveDy = Math.round((mouseDownY - e.clientY) / renderSettings.zoomLevel);
-            if (mouseMoveDx !== 0 || mouseMoveDy !== 0) {
+            let update = false;
+            let dirX = mouseDownX - e.clientX > 0 ? 1 : -1;
+            let dirY = mouseDownY - e.clientY > 0 ? 1 : -1;
+            mouseMoveDx = Math.round(Math.abs(mouseDownX - e.clientX) / renderSettings.zoomLevel) * dirX;
+            mouseMoveDy = Math.round(Math.abs(mouseDownY - e.clientY) / renderSettings.zoomLevel) * dirY;
+            if (mouseMoveDx !== 0) {
                 centerX = centerX + mouseMoveDx;
-                centerY = centerY + mouseMoveDy;
-                mouseMoveDx = 0;
-                mouseMoveDy = 0;
                 mouseDownX = e.clientX;
+                mouseMoveDx = 0;
+                update = true;
+            }
+            if (mouseMoveDy !== 0) {
+                centerY = centerY + mouseMoveDy;
                 mouseDownY = e.clientY;
+                mouseMoveDy = 0;
+                update = true;
+            }
+            if (update === true) {
+                content.current.className = 'canvas-mouse-grab';
                 updateBoardFrame();
             }
         }
@@ -132,10 +144,14 @@ const Home = () => {
     const handleMouseUp = useCallback(() => {
         mouseDown = false;
         content.current.className = 'canvas-mouse-normal';
+        updateBoardFrame();
     }, []);
 
-    const setBoardCenter = (x,y) => {
-        console.log(x, y);
+    const setBoardCenter = (x, y) => {
+        centerX = x;
+        centerY = y;
+        Config.setUserPosition(x, y, Math.round(dimension.columns / 2), Math.round(dimension.rows / 2));
+        updateBoardFrame();
         bordDragLocked = false;
     }
 

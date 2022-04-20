@@ -2,10 +2,12 @@ export function setApplicationSettings(appSettings) {
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
 }
 
-export function setUserPosition(x, y) {
+export function setUserPosition(x, y, vx, vy) {
     let user = getUser();
     user.x = x;
     user.y = y;
+    user.vx = vx;
+    user.vy = vy;
     setUser(user);
 }
 
@@ -19,6 +21,8 @@ export function getUser() {
         user = {
             x: 0,
             y: 0,
+            vx: 0,
+            vy: 0,
             id: makeUserId()
         }
         setUser(user);
