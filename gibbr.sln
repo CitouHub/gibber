@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Web", "gibbr.Web\gibbr.Web.csproj", "{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Data", "gibbr.Data\gibbr.Data.csproj", "{6FDC546A-F199-4E7D-BB03-9D8102492EE0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Test", "gibbr.Test\gibbr.Test.csproj", "{5944BFBA-439A-47DE-8F84-41D002573F15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Service", "gibbr.Service\gibbr.Service.csproj", "{03F24B46-8E79-47DB-BD84-53CA4B1B0970}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Domain", "gibbr.Domain\gibbr.Domain.csproj", "{7846555F-DEB9-4103-B6A8-672CBCDE7E63}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.API", "gibbr.API\gibbr.API.csproj", "{2DF25576-FE6A-4614-A45B-D20716D5178D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gibbr.Common", "gibbr.Common\gibbr.Common.csproj", "{13A0593D-EDBC-417B-B53B-94018606C00B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BAD09E4-F3FE-40F8-95C2-652A31E093EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FDC546A-F199-4E7D-BB03-9D8102492EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FDC546A-F199-4E7D-BB03-9D8102492EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FDC546A-F199-4E7D-BB03-9D8102492EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FDC546A-F199-4E7D-BB03-9D8102492EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5944BFBA-439A-47DE-8F84-41D002573F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5944BFBA-439A-47DE-8F84-41D002573F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5944BFBA-439A-47DE-8F84-41D002573F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5944BFBA-439A-47DE-8F84-41D002573F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F24B46-8E79-47DB-BD84-53CA4B1B0970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7846555F-DEB9-4103-B6A8-672CBCDE7E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF25576-FE6A-4614-A45B-D20716D5178D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13A0593D-EDBC-417B-B53B-94018606C00B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A0593D-EDBC-417B-B53B-94018606C00B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A0593D-EDBC-417B-B53B-94018606C00B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A0593D-EDBC-417B-B53B-94018606C00B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C916E5DD-517E-4158-BB1F-77E80D0AE600}
+	EndGlobalSection
+EndGlobal
