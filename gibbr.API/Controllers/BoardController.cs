@@ -12,24 +12,27 @@ namespace Gibbr.API.Controllers
         private readonly ILogger<BoardController> _logger;
         private readonly IBoardService _boardService;
         private readonly ISetBoardCellQueue _setBoardCellQueue;
+        private readonly IConfiguration conf;
 
-        public BoardController(ILogger<BoardController> logger, IBoardService boardService, ISetBoardCellQueue setBoardCellQueue)
+        public BoardController(ILogger<BoardController> logger, IBoardService boardService, ISetBoardCellQueue setBoardCellQueue, IConfiguration conf)
         {
             _logger = logger;
             _boardService = boardService;
             _setBoardCellQueue = setBoardCellQueue;
+            this.conf = conf;
         }
 
         [HttpGet("cell/{x}/{y}/{dx}/{dy}")]
         public async Task<IActionResult> GetBoardCellsAsync(long x, long y, short dx, short dy)
         {
-            if(dx > 0 && dy > 0)
+            if (dx > 0 && dy > 0)
             {
                 _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
+                _logger.LogDebug($"{conf.GetValue<string>("ConnectionString")}");
                 var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
 
                 return Ok(boardCells);
-            } 
+            }
             else
             {
                 return BadRequest($"dx:{dy} and dy:{dy} must be greater then 0");
