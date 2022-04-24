@@ -1,0 +1,61 @@
+name: gibbr release
+
+env:
+  API_PROJECT_NAME: gibbr.API
+  WA_PROJECT_NAME: gibbr.Web
+  API_NAME: as-api-gibbr
+  WA_NAME: as-wa-gibbr
+  DOTNET_VERSION: '6.0'
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Build ${{env.API_PROJECT_NAME}}
+        run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release
+
+      - name: Publish ${{env.API_PROJECT_NAME}}
+        run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.API_PROJECT_NAME}}
+          
+      - name: Deploy ${{env.API_PROJECT_NAME}}
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.API_NAME }}
+          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          package: ${{env.API_PROJECT_NAME}}
+          
+      - name: Build ${{env.WA_PROJECT_NAME}}
+        run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
+
+      - name: Publish ${{env.WA_PROJECT_NAME}}
+        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.WA_PROJECT_NAME}}
+          
+      - name: Deploy ${{env.WA_PROJECT_NAME}}
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WA_NAME }}
+          publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
+          package: ${{env.WA_PROJECT_NAME}}
+
