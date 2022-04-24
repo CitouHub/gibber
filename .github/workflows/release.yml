@@ -20,6 +20,8 @@
 name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
+  API_PROJECT_NAME: gibbr.API
+  WA_PROJECT_NAME: gibbr.Web
   API_NAME: as-api-gibbr
   WA_NAME: as-wa-gibbr
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
@@ -52,16 +54,16 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/${{env.API_PROJECT_NAME}}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{env.DOTNET_ROOT}}/${{env.API_PROJECT_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
@@ -83,7 +85,7 @@ jobs:
         with:
           app-name: ${{ env.API_NAME }}
           publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/${{env.API_PROJECT_NAME}}
 
       - name: Deploy to gibbr web app
         id: gibbr-wa
@@ -91,4 +93,4 @@ jobs:
         with:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/${{env.API_PROJECT_NAME}}
