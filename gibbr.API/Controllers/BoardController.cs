@@ -23,17 +23,24 @@ namespace Gibbr.API.Controllers
         [HttpGet("cell/{x}/{y}/{dx}/{dy}")]
         public async Task<IActionResult> GetBoardCellsAsync(long x, long y, short dx, short dy)
         {
-            if(dx > 0 && dy > 0)
+            try
             {
-                _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
-                var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
+                if (dx > 0 && dy > 0)
+                {
+                    _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
+                    var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
 
-                return Ok(boardCells);
-            } 
-            else
+                    return Ok(boardCells);
+                }
+                else
+                {
+                    return BadRequest($"dx:{dy} and dy:{dy} must be greater then 0");
+                }
+            } catch(Exception ex)
             {
-                return BadRequest($"dx:{dy} and dy:{dy} must be greater then 0");
+                return Ok(ex.ToString());
             }
+            
         }
 
         [HttpPut("cell/{userId}")]
