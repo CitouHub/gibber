@@ -40,7 +40,6 @@ jobs:
         run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.API_PROJECT_NAME}}
           
       - name: Deploy ${{env.API_PROJECT_NAME}}
-        id: ${{env.API_PROJECT_NAME}}
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.API_NAME }}
