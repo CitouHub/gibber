@@ -77,7 +77,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
 
       - name: Deploy to gibber API
         id: gibbr-api
