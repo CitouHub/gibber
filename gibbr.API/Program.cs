@@ -18,6 +18,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GibbrDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
+builder.Services.AddDbContext<BaseDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
 builder.Services.AddMvc()
 .AddJsonOptions(options =>
 {
@@ -36,11 +37,11 @@ builder.Services.AddHostedService<UpdateBoardBackgroundService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 
