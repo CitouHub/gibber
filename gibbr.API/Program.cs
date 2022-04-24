@@ -10,6 +10,13 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+using var loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder
+    .SetMinimumLevel(LogLevel.Trace)
+    .AddConsole());
+
+var logger = loggerFactory.CreateLogger<Program>();
+logger.LogInformation(configuration.GetValue<string>("ConnectionString"));
+
 // Add services to the container.
 
 builder.Services.AddControllers();
