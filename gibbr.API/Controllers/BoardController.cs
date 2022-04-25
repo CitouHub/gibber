@@ -40,7 +40,7 @@ namespace gibbr.API.Controllers
         }
 
         [HttpPut("cell/{userId}")]
-        public async Task<IActionResult> AddBoardCells([FromBody] List<BoardCellDTO> boardCells, string userId)
+        public IActionResult AddBoardCells([FromBody] List<BoardCellDTO> boardCells, string userId)
         {
             _logger.LogDebug($"Request to queue {boardCells.Count} board cell for add");
             if (boardCells.Any())
