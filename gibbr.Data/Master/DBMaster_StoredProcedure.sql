@@ -49,7 +49,7 @@ BEGIN
 
 	DECLARE @Occupied BIT
 	SET @Occupied = CAST(CASE WHEN EXISTS(SELECT TOP 1 X, Y FROM BoardCell WHERE UserId <> @UserId
-		AND X >= @X - 1 AND X >= @X + 1 AND Y >= @Y - 1 AND Y <= @Y + 1) THEN 1 ELSE 0 END AS BIT)
+		AND X >= @X - 1 AND X <= @X + 1 AND Y >= @Y - 1 AND Y <= @Y + 1) THEN 1 ELSE 0 END AS BIT)
 
 	IF(@Occupied = 0)
 	BEGIN

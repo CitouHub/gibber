@@ -46,7 +46,7 @@ const BoardView = () => {
             board.hub.connection.start()
                 .then(() => {
                     board.hub.connection.on('BoardUpdate', boardCell => {
-                        updateBoardCell(boardCell.x - frame.ix, boardCell.y - frame.iy, boardCell.l);
+                        updateBoardCell(boardCell.x - frame.ix, boardCell.y - frame.iy, boardCell.l, boardCell.u);
                     });
                 }).catch(e => console.log('Connection failed: ', e));
         }
@@ -124,15 +124,21 @@ const BoardView = () => {
         renderCaret(x, y);
     }
 
-    const updateBoardCell = (x, y, letter) => {
+    const updateBoardCell = (x, y, letter, userId) => {
+        if (!userId) {
+            userId = Config.getUser().id;
+        }
         let cell = board.cells.find(_ => _.vx === x && _.vy === y);
         if (!cell && letter !== '') {
-            cell = { x: x + frame.ix, y: y + frame.iy, vx: x, vy: y, l: letter, r: false };
+            cell = { x: x + frame.ix, y: y + frame.iy, vx: x, vy: y, l: letter, u: userId, r: false };
             board.cells.push(cell);
         } else if (cell && letter !== cell.l) {
             cell.l = letter;
+            cell.u = userId;
             cell.r = false;
         }
+
+        console.log(cell);
 
         updateBoard();
         return cell;
