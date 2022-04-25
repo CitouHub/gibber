@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Gibbr.Data;
-using Gibbr.Data.ComplexModel;
+using gibbr.Data;
+using gibbr.Data.ComplexModel;
 
-namespace Gibbr.Domain
+namespace gibbr.Domain
 {
     public class AutoMapperProfile : Profile
     {

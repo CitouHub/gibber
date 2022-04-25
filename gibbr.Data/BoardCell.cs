@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Gibbr.Data
+namespace gibbr.Data
 {
     public partial class BoardCell
     {

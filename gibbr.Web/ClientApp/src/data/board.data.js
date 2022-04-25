@@ -2,7 +2,12 @@ export const board = {
     canvas: {},
     cells: [],
     zoom: 16,
-   
+    input: {
+        enabled: true
+    },
+    hub: {
+        connection: null
+    }
 }
 
 export const drag = {
@@ -28,8 +33,8 @@ export const grid = {
 }
 
 export const position = {
-    x: 0,
-    y: 0,
+    x: null,
+    y: null,
     caret: {
         x: 0,
         y: 0,

@@ -1,4 +1,4 @@
-﻿namespace Gibbr.Data.TypeModel
+﻿namespace gibbr.Data.TypeModel
 {
     public class ShortResult
     {

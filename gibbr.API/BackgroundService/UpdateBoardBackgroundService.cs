@@ -1,8 +1,9 @@
-﻿using Gibbr.API.Infrastructure;
-using Gibbr.Domain;
-using Gibbr.Service;
+﻿using gibbr.API.Infrastructure;
+using gibbr.API.SignalR;
+using gibbr.Domain;
+using gibbr.Service;
 
-namespace Gibbr.API.BackgroundService
+namespace gibbr.API.BackgroundService
 {
     public class UpdateBoardBackgroundService : IHostedService
     {
@@ -10,18 +11,21 @@ namespace Gibbr.API.BackgroundService
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly ISetBoardCellQueue _setBoardCellQueue;
+        private readonly IBoardHubClientManager _boardHubClientManager;
         private readonly List<Task> _setBoardCellTasks;
 
         public UpdateBoardBackgroundService(
             ILogger<UpdateBoardBackgroundService> logger,
             IConfiguration configuration,
             IServiceProvider serviceProvider,
-            ISetBoardCellQueue setBoardCellQueue)
+            ISetBoardCellQueue setBoardCellQueue,
+            IBoardHubClientManager boardHubClientManager)
         {
             _logger = logger;
             _configuration = configuration;
             _serviceProvider = serviceProvider;
             _setBoardCellQueue = setBoardCellQueue;
+            _boardHubClientManager = boardHubClientManager;
             _setBoardCellTasks = new List<Task>();
             _logger.LogDebug("Instantiated");
         }
@@ -45,17 +49,26 @@ namespace Gibbr.API.BackgroundService
 
                 if (boardCell != null && cancellationToken.IsCancellationRequested == false)
                 {
-                    _setBoardCellTasks.Add(SetBoardCell(boardCell));
+                    _setBoardCellTasks.Add(SetBoardCell(boardCell, cancellationToken));
                 }
             }
         }
 
-        private async Task SetBoardCell(BoardCellDTO boardCell)
+        private async Task SetBoardCell(BoardCellDTO boardCell, CancellationToken cancellationToken)
         {
+            _logger.LogDebug($"New set board cell task started for {boardCell}, {_setBoardCellTasks.Count} tasks running");
             using IServiceScope outerScope = _serviceProvider.CreateScope();
             var boardService = outerScope.ServiceProvider.GetRequiredService<IBoardService>();
             var success = await boardService.SetBoardCellAsync(boardCell);
-            _logger.LogDebug($"New set board cell task started for {boardCell}, {_setBoardCellTasks.Count} tasks running");
+            if(success)
+            {
+                var messagesSent = await _boardHubClientManager.SendUpdateAsync(boardCell, cancellationToken);
+                _logger.LogDebug($"Board cell successfully update and updates sent to {messagesSent} subscribing clients");
+            } 
+            else
+            {
+                _logger.LogDebug($"Board cell could not be updated");
+            }
         }
 
         private void AwaitTaskSlot(CancellationToken cancellationToken)

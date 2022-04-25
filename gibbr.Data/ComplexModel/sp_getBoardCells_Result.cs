@@ -1,4 +1,4 @@
-﻿namespace Gibbr.Data.ComplexModel
+﻿namespace gibbr.Data.ComplexModel
 {
     #pragma warning disable IDE1006 // Naming Styles
     public class sp_getBoardCells_Result

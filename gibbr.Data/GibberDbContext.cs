@@ -1,10 +1,10 @@
-﻿using Gibbr.Data.ComplexModel;
-using Gibbr.Data.TypeModel;
+﻿using gibbr.Data.ComplexModel;
+using gibbr.Data.TypeModel;
 using Microsoft.EntityFrameworkCore;
 
 #pragma warning disable CS8618
 #pragma warning disable IDE1006 
-namespace Gibbr.Data
+namespace gibbr.Data
 {
     public partial class GibbrDbContext : BaseDbContext
     {

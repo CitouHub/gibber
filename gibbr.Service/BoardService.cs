@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Gibbr.Common;
-using Gibbr.Data;
-using Gibbr.Data.Extension;
-using Gibbr.Domain;
+using gibbr.Common;
+using gibbr.Data;
+using gibbr.Data.Extension;
+using gibbr.Domain;
 
-namespace Gibbr.Service
+namespace gibbr.Service
 {
     public interface IBoardService
     {

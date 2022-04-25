@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Gibbr.Web.Controllers
+namespace gibbr.Web.Controllers
 {
     [Route("api/[controller]")]
     public class AppSettingsController : Controller

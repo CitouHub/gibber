@@ -1,9 +1,9 @@
-﻿using Gibbr.API.Infrastructure;
-using Gibbr.Domain;
-using Gibbr.Service;
+﻿using gibbr.API.Infrastructure;
+using gibbr.Domain;
+using gibbr.Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gibbr.API.Controllers
+namespace gibbr.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -12,14 +12,15 @@ namespace Gibbr.API.Controllers
         private readonly ILogger<BoardController> _logger;
         private readonly IBoardService _boardService;
         private readonly ISetBoardCellQueue _setBoardCellQueue;
-        private readonly IConfiguration conf;
 
-        public BoardController(ILogger<BoardController> logger, IBoardService boardService, ISetBoardCellQueue setBoardCellQueue, IConfiguration conf)
+        public BoardController(
+            ILogger<BoardController> logger, 
+            IBoardService boardService, 
+            ISetBoardCellQueue setBoardCellQueue)
         {
             _logger = logger;
             _boardService = boardService;
             _setBoardCellQueue = setBoardCellQueue;
-            this.conf = conf;
         }
 
         [HttpGet("cell/{x}/{y}/{dx}/{dy}")]
@@ -28,7 +29,6 @@ namespace Gibbr.API.Controllers
             if (dx > 0 && dy > 0)
             {
                 _logger.LogDebug($"Getting board cells for {y}:{y}:{dx}:{dy}");
-                _logger.LogDebug($"{conf.GetValue<string>("ConnectionString")}");
                 var boardCells = await _boardService.GetBoardCellsAsync(x, y, dx, dy);
 
                 return Ok(boardCells);
@@ -40,7 +40,7 @@ namespace Gibbr.API.Controllers
         }
 
         [HttpPut("cell/{userId}")]
-        public IActionResult AddBoardCells([FromBody] List<BoardCellDTO> boardCells, string userId)
+        public async Task<IActionResult> AddBoardCells([FromBody] List<BoardCellDTO> boardCells, string userId)
         {
             _logger.LogDebug($"Request to queue {boardCells.Count} board cell for add");
             if (boardCells.Any())

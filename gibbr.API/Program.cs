@@ -1,9 +1,10 @@
 using AutoMapper;
-using Gibbr.API.BackgroundService;
-using Gibbr.API.Infrastructure;
-using Gibbr.Data;
-using Gibbr.Domain;
-using Gibbr.Service;
+using gibbr.API.BackgroundService;
+using gibbr.API.Infrastructure;
+using gibbr.API.SignalR;
+using gibbr.Data;
+using gibbr.Domain;
+using gibbr.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -19,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GibbrDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
 builder.Services.AddDbContext<BaseDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
+builder.Services.AddSignalR();
 builder.Services.AddMvc()
 .AddJsonOptions(options =>
 {
@@ -31,6 +33,7 @@ var mappingConfig = new MapperConfiguration(config =>
 var mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton<ISetBoardCellQueue, SetBoardCellQueue>();
+builder.Services.AddSingleton<IBoardHubClientManager, BoardHubClientManager>();
 builder.Services.AddScoped<IBoardService, BoardService>();
 builder.Services.AddHostedService<UpdateBoardBackgroundService>();
 
@@ -46,10 +49,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(builder => builder
-    .AllowAnyOrigin()
+    .WithOrigins(configuration.GetValue<string>("Cors:Origin"))
     .AllowAnyMethod()
-    .AllowAnyHeader());
+    .AllowAnyHeader()
+    .AllowCredentials());
 
+app.UseRouting();
+app.UseEndpoints(_ => _.MapHub<BoardHub>("/hubs/board"));
 app.MapControllers();
 
 app.Run();

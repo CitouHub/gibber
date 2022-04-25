@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import GoToDialog from '../component/goto.dialog';
 import { useWindowSize } from '../util/use.windowsize';
 import { useInterval } from '../util/use.interval';
@@ -24,49 +25,86 @@ const BoardView = () => {
     board.canvas = useRef();
 
     let user = Config.getUser();
-    position.x = user.x;
-    position.y = user.y;
+    position.x = position.x ?? user.x;
+    position.y = position.y ?? user.y;
 
     useInterval(toggleCaret, 300);
+
+    const connectBoardHub = () => {
+        if (board.hub.connection) {
+            board.hub.connection.stop();
+        }
+
+        let user = Config.getUser();
+        let hubUrl = `${Config.apiURL()}hubs/board?x=${frame.ox}&y=${frame.oy}&dx=${frame.dx}&dy=${frame.dy}&userId=${user.id}`;
+        board.hub.connection = new HubConnectionBuilder()
+            .withUrl(hubUrl)
+            .withAutomaticReconnect()
+            .build();
+
+        if (board.hub.connection) {
+            board.hub.connection.start()
+                .then(() => {
+                    board.hub.connection.on('BoardUpdate', boardCell => {
+                        updateBoardCell(boardCell.x - frame.ix, boardCell.y - frame.iy, boardCell.l);
+                    });
+                }).catch(e => console.log('Connection failed: ', e));
+        }
+    }
 
     const updateGrid = useCallback(() => {
         let columns = Math.floor(content.current.offsetWidth / (board.zoom * render.widthFactor));
         let rows = Math.floor(content.current.offsetHeight / board.zoom);
 
-        updateFrame(columns, rows);
         grid.columns = columns;
         grid.rows = rows;
+        updateFrame();
     }, [])
 
     useEffect(() => {
         if (content.current) {
             updateGrid();
+            position.caret.x = Math.floor(grid.columns / 2);
+            position.caret.y = Math.floor(grid.rows / 2);
             triggerUpdate(true);
         }
     }, [windowSize, updateGrid]);
 
-    const updateFrame = (columns, rows) => {
-        frame.ox = position.x - Math.floor((columns * 3) / 2);
-        frame.oy = position.y - Math.floor((rows * 3) / 2);
-        frame.ix = position.x - Math.floor(columns / 2);
-        frame.iy = position.y - Math.floor(rows / 2);
-        frame.dx = columns * 3;
-        frame.dy = rows * 3;
+    const updateFrame = () => {
+        frame.ox = position.x - Math.floor((grid.columns * 3) / 2);
+        frame.oy = position.y - Math.floor((grid.rows * 3) / 2);
+        frame.ix = position.x - Math.floor(grid.columns / 2);
+        frame.iy = position.y - Math.floor(grid.rows / 2);
+        frame.dx = grid.columns * 3;
+        frame.dy = grid.rows * 3;
     }
 
     useEffect(() => {
         if (frame.dx > 0 && frame.dy > 0 && update === true) {
             triggerUpdate(false);
+            let unsavedChanges = BoardService.getUnsavedChanges();
             BoardService.getBoardCells(frame.ox, frame.oy, frame.dx, frame.dy).then((result) => {
-                result.forEach(_ => {
+
+                unsavedChanges.forEach(_ => {
+                    let cell = result.find(c => c.x === _.x && c.y === _.y);
+                    let cellIndex = result.indexOf(cell);
+                    result.splice(cellIndex, 1);
+                });
+                board.cells = result.concat(unsavedChanges);
+                board.cells.forEach(_ => {
                     _.vx = _.x - frame.ix;
                     _.vy = _.y - frame.iy;
                     _.r = false;
                 });
-                board.cells = result;
+
+                clearBoard();
                 updateBoard();
-                updatePosition(Math.floor(grid.columns / 2), Math.floor(grid.rows / 2));
+                connectBoardHub();
+                updatePosition(position.caret.x, position.caret.y);
                 setGoToOpen(false);
+
+                drag.enabled = true;
+                board.input.enabled = true;
             });
         }
     }, [update]);
@@ -101,63 +139,74 @@ const BoardView = () => {
     }
 
     const goTo = useCallback((x, y) => {
-        board.dragEnable = true;
+        board.input.enabled = false;
         position.x = x;
         position.y = y;
-        position.caret.x = Math.floor(grid.columns / 2);
-        position.caret.y = Math.floor(grid.rows / 2);
-        clearBoard();
-        updateFrame(grid.columns, grid.rows);
+        updateFrame();
         triggerUpdate(true);
     }, [])
 
     const handleScroll = useCallback(() => {
+        let offsetX = 0;
+        let offsetY = 0;
+
         if (position.caret.x < 0) {
-            goTo(frame.ix + Math.floor(grid.columns / 4), frame.iy + Math.floor(grid.rows / 2));
+            offsetX = -1 * Math.floor(grid.columns / 6);
         } else if (position.caret.x > grid.columns) {
-            goTo(position.caret.x + frame.ix - Math.floor(grid.columns / 4), frame.iy + Math.floor(grid.rows / 2));
+            offsetX = Math.floor(grid.columns / 6);
         } else if (position.caret.y < 0) {
-            goTo(frame.ix + Math.floor(grid.columns / 2), frame.iy + Math.floor(grid.rows / 4));
+            offsetY = -1 * Math.floor(grid.rows / 6);
         } else if (position.caret.y > grid.rows) {
-            goTo(frame.ix + Math.floor(grid.columns / 2), position.caret.y + frame.iy - Math.floor(grid.rows / 4));
+            offsetY = Math.floor(grid.rows / 6);
+        }
+
+        if (offsetX !== 0 || offsetY !== 0) {
+            let centerX = frame.ix + Math.floor(grid.columns / 2);
+            let centerY = frame.iy + Math.floor(grid.rows / 2);
+            position.caret.x = position.caret.x - offsetX;
+            position.caret.y = position.caret.y - offsetY;
+            goTo(centerX + offsetX, centerY + offsetY);
         }
     }, [goTo])
 
     const handleKeyDown = useCallback((e) => {
-        if (!isCtrlDown() && !goToOpen) {
-            if (isCtrl(e)) {
-                setCtrlDown(true);
-            } else if (isLeftArrow(e)) {
-                updatePosition(position.caret.x - 1, position.caret.y);
-            } else if (isUpArrow(e)) {
-                updatePosition(position.caret.x, position.caret.y - 1);
-            } else if (isRightArrow(e)) {
-                updatePosition(position.caret.x + 1, position.caret.y);
-            } else if (isDownArrow(e)) {
-                updatePosition(position.caret.x, position.caret.y + 1);
-            } else if (isBackspace(e)) {
-                if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
-                    let cell = updateBoardCell(position.caret.x - 1, position.caret.y, '');
-                    BoardService.bufferSaveBoardCell(cell);
-                }
-                updatePosition(position.caret.x - 1, position.caret.y);
-            } else if (isEnter(e)) {
-                console.log(goToOpen);
-                let newLineX = getNewLine(position.caret.x, position.caret.y);
-                updatePosition(newLineX, position.caret.y + 1);
-            } else if (e.key.length === 1) {
-                if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
-                    let cell = updateBoardCell(position.caret.x, position.caret.y, e.key);
-                    BoardService.bufferSaveBoardCell(cell);
-                }
+        if (board.input.enabled) {
+            if (!isCtrlDown() && !goToOpen) {
+                if (isCtrl(e)) {
+                    setCtrlDown(true);
+                } else if (isLeftArrow(e)) {
+                    updatePosition(position.caret.x - 1, position.caret.y);
+                } else if (isUpArrow(e)) {
+                    updatePosition(position.caret.x, position.caret.y - 1);
+                } else if (isRightArrow(e)) {
+                    updatePosition(position.caret.x + 1, position.caret.y);
+                } else if (isDownArrow(e)) {
+                    updatePosition(position.caret.x, position.caret.y + 1);
+                } else if (isBackspace(e)) {
+                    if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
+                        let cell = updateBoardCell(position.caret.x - 1, position.caret.y, '');
+                        BoardService.bufferSaveBoardCell(cell);
+                    }
+                    updatePosition(position.caret.x - 1, position.caret.y);
+                } else if (isEnter(e)) {
+                    let newLineX = getNewLine(position.caret.x, position.caret.y);
+                    updatePosition(newLineX, position.caret.y + 1);
+                } else if (e.key.length === 1) {
+                    if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
+                        let cell = updateBoardCell(position.caret.x, position.caret.y, e.key);
+                        BoardService.bufferSaveBoardCell(cell);
+                    }
 
-                updatePosition(position.caret.x + 1, position.caret.y);
+                    updatePosition(position.caret.x + 1, position.caret.y);
+                }
+                handleScroll();
+            } else if (e.key === 'g') {
+                e.preventDefault();
+                drag.enabled = false;
+                setGoToOpen(true);
             }
-            handleScroll();
-        } else if (e.key === 'g') {
+        } else {
             e.preventDefault();
-            board.dragEnable = false;
-            setGoToOpen(true);
         }
     }, [goToOpen, handleScroll])
 
@@ -198,7 +247,7 @@ const BoardView = () => {
 
     const closeGoTo = () => {
         setGoToOpen(false);
-        board.dragEnable = true;
+        drag.enabled = true;
     }
 
     const handleMouseDown = useCallback((e) => {
@@ -216,7 +265,7 @@ const BoardView = () => {
             let dirY = drag.mouseDownY - e.clientY > 0 ? 1 : -1;
             let mouseMoveDx = Math.floor(Math.abs(drag.mouseDownX - e.clientX) / (board.zoom * render.widthFactor)) * dirX;
             let mouseMoveDy = Math.floor(Math.abs(drag.mouseDownY - e.clientY) / board.zoom) * dirY;
-            
+
             if (mouseMoveDx !== 0) {
                 position.x = position.x + mouseMoveDx;
                 drag.mouseDownX = e.clientX;

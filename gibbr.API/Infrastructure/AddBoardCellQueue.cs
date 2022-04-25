@@ -1,7 +1,7 @@
-﻿using Gibbr.Domain;
+﻿using gibbr.Domain;
 using System.Collections.Concurrent;
 
-namespace Gibbr.API.Infrastructure
+namespace gibbr.API.Infrastructure
 {
     public interface ISetBoardCellQueue
     {

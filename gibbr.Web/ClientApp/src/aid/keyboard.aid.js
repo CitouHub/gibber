@@ -66,4 +66,6 @@ export function getNewLine(x, y) {
             }
         }
     }
+
+    return x;
 }

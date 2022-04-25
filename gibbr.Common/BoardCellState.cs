@@ -1,4 +1,4 @@
-﻿namespace Gibbr.Common
+﻿namespace gibbr.Common
 {
     public enum BoardCellState
     {

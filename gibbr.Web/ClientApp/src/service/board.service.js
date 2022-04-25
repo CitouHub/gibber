@@ -2,6 +2,7 @@ import * as Request from "../util/request.handler"
 import * as Config from '../util/config';
 import { saveSettings } from '../settings/save.settings';
 
+let lastBuffer = [];
 let saveBuffer = [];
 let saveTimer = {};
 
@@ -39,5 +40,10 @@ export function bufferSaveBoardCell(boardCell) {
 
 export function flushSaveBuffer() {
     saveBoardCells(saveBuffer);
+    lastBuffer = [...saveBuffer];
     saveBuffer = [];
 };
+
+export function getUnsavedChanges() {
+    return saveBuffer.concat(lastBuffer);
+}

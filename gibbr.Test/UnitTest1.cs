@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Gibbr.Test
+namespace gibbr.Test
 {
     public class UnitTest1
     {

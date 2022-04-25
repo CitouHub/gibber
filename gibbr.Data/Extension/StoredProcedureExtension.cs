@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Gibbr.Data.ComplexModel;
-using Gibbr.Data.TypeModel;
+using gibbr.Data.ComplexModel;
+using gibbr.Data.TypeModel;
 
 #pragma warning disable IDE1006 // Naming Styles
-namespace Gibbr.Data.Extension
+namespace gibbr.Data.Extension
 {
     public static class StoredProcedureExtension
     {

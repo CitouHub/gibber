@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Gibbr.Domain
+namespace gibbr.Domain
 {
     public class BoardCellDTO
     {
