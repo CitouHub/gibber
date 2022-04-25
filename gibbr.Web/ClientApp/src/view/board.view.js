@@ -30,7 +30,7 @@ const BoardView = () => {
 
     useInterval(toggleCaret, 300);
 
-    const connectBoardHub = () => {
+    const connectBoardHub = useCallback(() => {
         if (board.hub.connection) {
             board.hub.connection.stop();
         }
@@ -50,7 +50,7 @@ const BoardView = () => {
                     });
                 }).catch(e => console.log('Connection failed: ', e));
         }
-    }
+    }, [])
 
     const updateGrid = useCallback(() => {
         let columns = Math.floor(content.current.offsetWidth / (board.zoom * render.widthFactor));
@@ -107,7 +107,7 @@ const BoardView = () => {
                 board.input.enabled = true;
             });
         }
-    }, [update]);
+    }, [update, connectBoardHub]);
 
     const selectPosition = (e) => {
         var x = Math.floor(e.clientX / (board.zoom * render.widthFactor));
