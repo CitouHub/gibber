@@ -9,7 +9,12 @@ import * as BoardValidation from '../validation/board.validation';
 import * as Config from '../util/config';
 
 import { toggleCaret, updateBoard, resetCell, renderCaret, clearBoard } from '../aid/canvas.aid';
-import { isLeftArrow, isUpArrow, isRightArrow, isDownArrow, isCtrl, isEnter, isBackspace, getNewLine, setCtrlDown, isCtrlDown, setAltGrDown, isAltGrDown, isAltGr } from '../aid/keyboard.aid';
+import {
+    isLeftArrow, isUpArrow, isRightArrow, isDownArrow,
+    isCtrl, isAltGr, isEnter, isBackspace, isHome, isEnd,
+    setCtrlDown, isCtrlDown, setAltGrDown,
+    getStartOfLine, getEndOfLine
+} from '../aid/keyboard.aid';
 
 import { render } from '../settings/render.settings';
 import { board, grid, drag, frame, position } from '../data/board.data';
@@ -189,6 +194,14 @@ const BoardView = () => {
                     updatePosition(position.caret.x + 1, position.caret.y);
                 } else if (isDownArrow(e)) {
                     updatePosition(position.caret.x, position.caret.y + 1);
+                } else if (isHome(e)) {
+                    let startOfLine = getStartOfLine(position.caret.x, position.caret.y);
+                    updatePosition(startOfLine, position.caret.y);
+                } else if (isEnd(e)) {
+                    let endOfLine = getEndOfLine(position.caret.x, position.caret.y, grid.columns);
+                    updatePosition(endOfLine, position.caret.y);
+                } else if (isDownArrow(e)) {
+                    updatePosition(position.caret.x, position.caret.y + 1);
                 } else if (isBackspace(e)) {
                     if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
                         let cell = updateBoardCell(position.caret.x - 1, position.caret.y, '');
@@ -196,8 +209,8 @@ const BoardView = () => {
                     }
                     updatePosition(position.caret.x - 1, position.caret.y);
                 } else if (isEnter(e)) {
-                    let newLineX = getNewLine(position.caret.x, position.caret.y);
-                    updatePosition(newLineX, position.caret.y + 1);
+                    let startOfLine = getStartOfLine(position.caret.x, position.caret.y);
+                    updatePosition(startOfLine, position.caret.y + 1);
                 } else if (e.key.length === 1) {
                     if (BoardValidation.canEditCell(position.caret.x, position.caret.y)) {
                         let cell = updateBoardCell(position.caret.x, position.caret.y, e.key);

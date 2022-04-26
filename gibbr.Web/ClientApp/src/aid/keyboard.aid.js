@@ -35,6 +35,14 @@ export function isTab(e) {
     return e.keyCode === 9;
 }
 
+export function isHome(e) {
+    return e.keyCode === 36;
+}
+
+export function isEnd(e) {
+    return e.keyCode === 35;
+}
+
 export function isDash(e) {
     return e.key === '-';
 }
@@ -67,18 +75,31 @@ export function isAltGrDown() {
     return altGrDown;
 }
 
-export function getNewLine(x, y) {
-    let emptyPositionFound = false;
+export function getStartOfLine(x, y) {
     for (let i = x; i >= 0; i--) {
-        var cell = board.cells.find(_ => _.vx === i && _.vy === y);
-        if (!cell || cell.l === '') {
-            if (emptyPositionFound === false) {
-                emptyPositionFound = true;
-            } else {
-                return i + 1;
-            }
+        var cell1 = board.cells.find(_ => _.vx === i - 1 && _.vy === y);
+        var cell2 = board.cells.find(_ => _.vx === i - 2 && _.vy === y);
+        if ((!cell1 || cell1.l === '') && (!cell2 || cell2.l === '')) {
+            return i;
         }
     }
 
     return x;
+}
+
+export function getEndOfLine(x, y, columns) {
+    for (let i = x; i <= columns; i++) {
+        var cell1 = board.cells.find(_ => _.vx === i && _.vy === y);
+        var cell2 = board.cells.find(_ => _.vx === i + 1 && _.vy === y);
+        var cell3 = board.cells.find(_ => _.vx === i + 2 && _.vy === y);
+        if ((!cell2 || cell2.l === '') && (!cell3 || cell3.l === '')) {
+            if (!cell1 || cell1.l === '') {
+                return i;
+            } else {
+                return i + 1;
+            }
+        }    
+    }
+
+    return columns - 1;
 }
