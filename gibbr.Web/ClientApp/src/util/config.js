@@ -10,11 +10,11 @@ export function setUserPosition(x, y) {
 }
 
 export function setUser(user) {
-    localStorage.setItem('gibberUser', JSON.stringify(user));
+    localStorage.setItem('gibbrUser', JSON.stringify(user));
 }
 
 export function getUser() {
-    let user = JSON.parse(localStorage.getItem('gibberUser'));
+    let user = JSON.parse(localStorage.getItem('gibbrUser'));
     return user;
 }
 
