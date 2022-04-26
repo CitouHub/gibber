@@ -9,7 +9,7 @@ import * as BoardValidation from '../validation/board.validation';
 import * as Config from '../util/config';
 
 import { toggleCaret, updateBoard, resetCell, renderCaret, clearBoard } from '../aid/canvas.aid';
-import { isLeftArrow, isUpArrow, isRightArrow, isDownArrow, isCtrl, isEnter, isBackspace, getNewLine, setCtrlDown, isCtrlDown } from '../aid/keyboard.aid';
+import { isLeftArrow, isUpArrow, isRightArrow, isDownArrow, isCtrl, isEnter, isBackspace, getNewLine, setCtrlDown, isCtrlDown, setAltGrDown, isAltGrDown, isAltGr } from '../aid/keyboard.aid';
 
 import { render } from '../settings/render.settings';
 import { board, grid, drag, frame, position } from '../data/board.data';
@@ -138,8 +138,6 @@ const BoardView = () => {
             cell.r = false;
         }
 
-        console.log(cell);
-
         updateBoard();
         return cell;
     }
@@ -177,6 +175,9 @@ const BoardView = () => {
 
     const handleKeyDown = useCallback((e) => {
         if (board.input.enabled) {
+            if (isAltGr(e)) {
+                setAltGrDown(true);
+            }
             if (!isCtrlDown() && !goToOpen) {
                 if (isCtrl(e)) {
                     setCtrlDown(true);
@@ -218,7 +219,10 @@ const BoardView = () => {
 
     const handleKeyUp = useCallback((e) => {
         if (isCtrl(e)) {
-            setCtrlDown(false)
+            setCtrlDown(false);
+        }
+        if (isAltGr(e)) {
+            setAltGrDown(false);
         }
     }, [])
 

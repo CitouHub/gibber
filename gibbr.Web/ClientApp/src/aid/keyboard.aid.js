@@ -1,6 +1,7 @@
 import { board } from '../data/board.data';
 
 let ctrlDown = false;
+let altGrDown = false;
 
 export function isArrow(e) {
     return e.keyCode >= 37 && e.keyCode <= 40;
@@ -39,7 +40,11 @@ export function isDash(e) {
 }
 
 export function isCtrl(e) {
-    return e.keyCode === 17;
+    return e.keyCode === 17 && !altGrDown;
+}
+
+export function isAltGr(e) {
+    return e.keyCode === 18;
 }
 
 export function isNumber(e) {
@@ -51,7 +56,15 @@ export function setCtrlDown(down) {
 }
 
 export function isCtrlDown() {
-    return ctrlDown;
+    return ctrlDown && !altGrDown;
+}
+
+export function setAltGrDown(down) {
+    altGrDown = down;
+}
+
+export function isAltGrDown() {
+    return altGrDown;
 }
 
 export function getNewLine(x, y) {
