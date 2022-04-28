@@ -231,11 +231,11 @@ const BoardView = () => {
     }, [goToOpen, handleScroll])
 
     const handleKeyUp = useCallback((e) => {
-        if (isCtrl(e)) {
-            setCtrlDown(false);
-        }
         if (isAltGr(e)) {
             setAltGrDown(false);
+        }
+        if (isCtrl(e)) {
+            setCtrlDown(false);
         }
     }, [])
 

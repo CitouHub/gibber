@@ -39,6 +39,8 @@ namespace gibbr.Service
                     return await _context.sp_addBoardCellAsync(boardCellDto.X, boardCellDto.Y, boardCellDto.UserId, boardCellDto.Letter);
                 case BoardCellState.CanUpdate:
                     return await _context.sp_updateBoardCellAsync(boardCellDto.X, boardCellDto.Y, boardCellDto.Letter);
+                default:
+                    break;
             }
 
             return false;

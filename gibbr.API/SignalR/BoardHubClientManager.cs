@@ -14,7 +14,7 @@ namespace gibbr.API.SignalR
 
     public class BoardHubClientManager : IBoardHubClientManager
     {
-        private readonly List<BoardClient> _boardClients = new List<BoardClient>();
+        private readonly List<BoardClient> _boardClients = new();
         private readonly IHubContext<BoardHub> _hubContext;
 
         public BoardHubClientManager(IHubContext<BoardHub> hubContext)

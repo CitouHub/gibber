@@ -69,6 +69,7 @@ export function isCtrlDown() {
 
 export function setAltGrDown(down) {
     altGrDown = down;
+    ctrlDown = false;
 }
 
 export function isAltGrDown() {
