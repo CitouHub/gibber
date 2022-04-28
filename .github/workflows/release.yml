@@ -58,4 +58,16 @@ jobs:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
           package: ${{env.WA_PROJECT_NAME}}
+          
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy ${{env.WA_PROJECT_NAME}}
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WA_NAME }}
+          publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
+          package: ${{env.WA_PROJECT_NAME}}
+
 
