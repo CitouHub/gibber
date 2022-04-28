@@ -39,13 +39,25 @@ jobs:
       - name: Publish ${{env.API_PROJECT_NAME}}
         run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.API_PROJECT_NAME}}
           
-      - name: Upload
+      - name: Upload ${{env.API_PROJECT_NAME}}
         uses: actions/upload-artifact@v2
         with:
           name: ${{env.API_PROJECT_NAME}}
           path: ${{env.API_PROJECT_NAME}}
           
-  deploy:
+      - name: Build ${{env.WA_PROJECT_NAME}}
+        run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
+
+      - name: Publish ${{env.WA_PROJECT_NAME}}
+        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.WA_PROJECT_NAME}}
+          
+      - name: Upload ${{env.WA_PROJECT_NAME}}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.WA_PROJECT_NAME}}
+          path: ${{env.WA_PROJECT_NAME}}
+          
+  deploy-api:
     runs-on: ubuntu-latest
     needs: build
 
@@ -63,5 +75,22 @@ jobs:
           app-name: ${{ env.API_NAME }}
           publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
           package: ${{env.API_PROJECT_NAME}}
+          
+  deploy-web:
+    runs-on: ubuntu-latest
+    needs: build
 
-
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{env.WA_PROJECT_NAME}}
+          path: ${{env.WA_PROJECT_NAME}}
+      
+      - name: Deploy ${{env.WA_PROJECT_NAME}}
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WA_NAME }}
+          publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
+          package: ${{env.WA_PROJECT_NAME}}
