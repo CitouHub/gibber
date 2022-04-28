@@ -42,7 +42,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
-          name: ${{env.API_PROJECT_NAME}}
+          name: api
           path: ${{env.API_PROJECT_NAME}}
           
   deploy:
@@ -54,7 +54,7 @@ jobs:
       
       - uses: actions/download-artifact@v2
         with:
-          name: ${{env.API_PROJECT_NAME}}
+          name: api
       
       - name: Deploy ${{env.API_PROJECT_NAME}}
         uses: azure/webapps-deploy@v2
