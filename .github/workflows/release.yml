@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  gibbr-api:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,15 +37,34 @@ jobs:
         run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release
 
       - name: Publish ${{env.API_PROJECT_NAME}}
-        run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.API_PROJECT_NAME}}
-          
+        run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.API_PROJECT_NAME}}    
+        
       - name: Deploy ${{env.API_PROJECT_NAME}}
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.API_NAME }}
           publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
-          package: ${{env.API_PROJECT_NAME}}
+          package: ${{env.API_PROJECT_NAME}}  
           
+  gibbr-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Build ${{env.WA_PROJECT_NAME}}
         run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
 
@@ -58,4 +77,3 @@ jobs:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
           package: ${{env.WA_PROJECT_NAME}}
-
