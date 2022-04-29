@@ -5,7 +5,7 @@ env:
   WA_PROJECT_NAME: gibbr.Web
   API_NAME: as-api-gibbr
   WA_NAME: as-wa-gibbr
-  SQL_SERVER_NAME: sqls-gibbr
+  SQL_SERVER_NAME: sqls-gibbr.database.windows.net
   DOTNET_VERSION: '6.0'
 
 on:
