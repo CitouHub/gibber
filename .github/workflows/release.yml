@@ -5,6 +5,7 @@ env:
   WA_PROJECT_NAME: gibbr.Web
   API_NAME: as-api-gibbr
   WA_NAME: as-wa-gibbr
+  SQL_SERVER_NAME: sqls-gibbr
   DOTNET_VERSION: '6.0'
 
 on:
@@ -14,6 +15,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  scripting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Azure SQL Deploy
+        uses: Azure/sql-action@v1.2
+        with:
+          server-name: SQL_SERVER_NAME
+          connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          sql-file: gibbr.Data/Master/DBMaster_Landing.sql
+
   gibbr-api:
     runs-on: ubuntu-latest
 
