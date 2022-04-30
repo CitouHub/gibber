@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace gibbr.Test.SignalR
 {
-    internal class BoardHubClientManagerTest
+    public class BoardHubClientManagerTest
     {
     }
 }
