@@ -78,4 +78,4 @@ jobs:
         with:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
-          package: ${{env.WA_PROJECT_NAME}}
+          package: .
