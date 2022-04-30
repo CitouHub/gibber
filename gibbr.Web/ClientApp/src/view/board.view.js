@@ -348,6 +348,12 @@ const BoardView = () => {
         }
     }, [])
 
+    const handleVisibilityChange = () => {
+        setGoToOpen(false);
+        setAltGrDown(false);
+        setCtrlDown(false);
+    }
+
     useEffect(() => {
         window.addEventListener("wheel", handleZoom);
         window.addEventListener("keydown", handleKeyDown);
@@ -356,6 +362,7 @@ const BoardView = () => {
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("paste", handlePaste);
+        window.addEventListener("visibilitychange", handleVisibilityChange);
         return () => {
             window.removeEventListener("wheel", handleZoom);
             window.removeEventListener("keydown", handleKeyDown);
@@ -363,6 +370,7 @@ const BoardView = () => {
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("paste", handlePaste);
+            window.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp, handlePaste]);
 

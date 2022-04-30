@@ -8,7 +8,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { isEnter, isArrow, isNumber, isBackspace, isTab, isDash } from '../aid/keyboard.aid';
 import { position } from '../data/board.data';
 
 const GotoDialog = ({ open, goTo, close }) => {
@@ -20,16 +19,15 @@ const GotoDialog = ({ open, goTo, close }) => {
         setY(position.y);
     }, [open]);
 
-    const validate = (e) => {
-        if (isEnter(e)) {
-            goTo(parseInt(x), parseInt(y));
-        } else if (isTab(e) === false &&
-            isNumber(e) === false &&
-            isArrow(e) === false &&
-            isDash(e) === false &&
-            isBackspace(e) === false) {
-            e.preventDefault();
+    const handleInput = (newValue, oldValue) => {
+        for (var i = 0; i < newValue.length; i++) {
+            let charCode = newValue.charCodeAt(i);
+            if (charCode < 48 || charCode > 57) {
+                return oldValue
+            }
         }
+
+        return newValue;
     }
 
     return (
@@ -45,15 +43,13 @@ const GotoDialog = ({ open, goTo, close }) => {
                         autoFocus={true}
                         value={x}
                         inputProps={{ tabIndex: "1" }}
-                        onKeyDown={validate}
-                        onChange={e => setX(e.target.value)}
+                        onChange={e => setX(handleInput(e.target.value, x))}
                         startAdornment={<InputAdornment position="start">X</InputAdornment>} />
                     <Input
                         id="y"
                         value={y}
                         inputProps={{ tabIndex: "2" }}
-                        onKeyDown={validate}
-                        onChange={e => setY(e.target.value)}
+                        onChange={e => setY(handleInput(e.target.value, y))}
                         startAdornment={<InputAdornment position="start">Y</InputAdornment>} />
                 </DialogContent>
                 <DialogActions>
