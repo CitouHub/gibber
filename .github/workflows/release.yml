@@ -5,7 +5,6 @@ env:
   WA_PROJECT_NAME: gibbr.Web
   API_NAME: as-api-gibbr
   WA_NAME: as-wa-gibbr
-  SQL_SERVER_NAME: sqls-gibbr.database.windows.net
   DOTNET_VERSION: '6.0'
 
 on:
@@ -20,9 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Azure SQL Deploy
         uses: Azure/sql-action@v1.2
         with:
