@@ -1,4 +1,5 @@
-﻿using gibbr.Domain;
+﻿using gibbr.Common;
+using gibbr.Domain;
 using Microsoft.AspNetCore.SignalR;
 
 namespace gibbr.API.SignalR
@@ -43,7 +44,8 @@ namespace gibbr.API.SignalR
                 boardCell.X >= _.X && boardCell.X <= _.X + _.Dx &&
                 boardCell.Y >= _.Y && boardCell.Y <= _.Y + _.Dy).Select(_ => _.ConnectionId))
             {
-                await _hubContext.Clients.Client(connectionId).SendAsync("BoardUpdate", boardCell, cancellationToken);
+                await _hubContext.Clients.Client(connectionId)
+                    .SendAsync(BoardHubMethod.UpdateBoard, boardCell, cancellationToken);
                 messagesSent++;
             }
 
