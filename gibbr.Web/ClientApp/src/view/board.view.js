@@ -322,7 +322,7 @@ const BoardView = () => {
         }
     }, [])
 
-    const handlePaste = (e) => {
+    const handlePaste = useCallback((e) => {
         let paste = (e.clipboardData || window.clipboardData).getData('text');
         if (paste.length < board.paste.maxLength) {
             let x = position.caret.x;
@@ -338,7 +338,7 @@ const BoardView = () => {
                         x++;
                     }
                 }
-                else if (lastCharCode != 13 && lastCharCode != 10) {
+                else if (lastCharCode !== 13 && lastCharCode !== 10) {
                     x = position.caret.x;
                     y++;
                 }
@@ -346,7 +346,7 @@ const BoardView = () => {
                 lastCharCode = charCode;
             }
         }
-    }
+    }, [])
 
     useEffect(() => {
         window.addEventListener("wheel", handleZoom);
@@ -364,7 +364,7 @@ const BoardView = () => {
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("paste", handlePaste);
         };
-    }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp]);
+    }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp, handlePaste]);
 
     return (
         <div className='full-size' ref={content}>
