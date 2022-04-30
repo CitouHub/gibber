@@ -322,6 +322,32 @@ const BoardView = () => {
         }
     }, [])
 
+    const handlePaste = (e) => {
+        let paste = (e.clipboardData || window.clipboardData).getData('text');
+        if (paste.length < board.paste.maxLength) {
+            let x = position.caret.x;
+            let y = position.caret.y;
+            let lastCharCode = 0;
+            for (var i = 0; i < paste.length; i++) {
+                let char = paste.charAt(i);
+                let charCode = paste.charCodeAt(i);
+                if (charCode !== 13 && charCode !== 10) {
+                    if (BoardValidation.canEditCell(x, y)) {
+                        let cell = updateBoardCell(x, y, char);
+                        BoardService.bufferSaveBoardCell(cell, board.paste.maxLength);
+                        x++;
+                    }
+                }
+                else if (lastCharCode != 13 && lastCharCode != 10) {
+                    x = position.caret.x;
+                    y++;
+                }
+
+                lastCharCode = charCode;
+            }
+        }
+    }
+
     useEffect(() => {
         window.addEventListener("wheel", handleZoom);
         window.addEventListener("keydown", handleKeyDown);
@@ -329,13 +355,14 @@ const BoardView = () => {
         window.addEventListener("mousedown", handleMouseDown);
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
+        window.addEventListener("paste", handlePaste);
         return () => {
             window.removeEventListener("wheel", handleZoom);
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener("paste", handlePaste);
         };
     }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp]);
 

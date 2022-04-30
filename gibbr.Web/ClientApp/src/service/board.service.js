@@ -26,11 +26,11 @@ export async function saveBoardCells(boardCells) {
     });
 }
 
-export function bufferSaveBoardCell(boardCell) {
+export function bufferSaveBoardCell(boardCell, saveBufferMaxSize) {
     if (boardCell) {
         saveBuffer.push(boardCell);
         clearTimeout(saveTimer);
-        if (saveBuffer.length >= saveSettings.saveBufferMaxSize) {
+        if (saveBuffer.length >= saveBufferMaxSize ?? saveSettings.saveBufferMaxSize) {
             flushSaveBuffer();
         } else {
             saveTimer = setTimeout(() => flushSaveBuffer(), saveSettings.saveTimeTrigger)

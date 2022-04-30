@@ -2,6 +2,9 @@ export const board = {
     canvas: {},
     cells: [],
     zoom: 16,
+    paste: {
+        maxLength: 10000
+    },
     input: {
         enabled: true
     },
