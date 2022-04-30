@@ -55,13 +55,13 @@ jobs:
         run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
 
       - name: Publish ${{env.WA_PROJECT_NAME}}
-        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ./${{env.WA_PROJECT_NAME}}
+        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/${{env.WA_PROJECT_NAME}}
 
       - name: Upload ${{env.WA_PROJECT_NAME}}
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.WA_PROJECT_NAME}}
-          path: ./${{env.WA_PROJECT_NAME}}
+          path: ${{env.DOTNET_ROOT}}/${{env.WA_PROJECT_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
@@ -82,4 +82,4 @@ jobs:
         with:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
-          package: ./${{env.WA_PROJECT_NAME}}
+          package: .
