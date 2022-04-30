@@ -324,7 +324,7 @@ const BoardView = () => {
 
     const handlePaste = useCallback((e) => {
         let paste = (e.clipboardData || window.clipboardData).getData('text');
-        if (paste.length < board.paste.maxLength) {
+        if (paste.length < board.paste.maxLength && goToOpen === false) {
             let x = position.caret.x;
             let y = position.caret.y;
             let lastCharCode = 0;
@@ -346,7 +346,7 @@ const BoardView = () => {
                 lastCharCode = charCode;
             }
         }
-    }, [])
+    }, [goToOpen])
 
     const handleVisibilityChange = () => {
         setGoToOpen(false);
