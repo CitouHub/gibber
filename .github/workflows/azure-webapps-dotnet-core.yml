@@ -1,40 +1,44 @@
-# This workflow will build and push a .NET Core app to an Azure Web App when a commit is pushed to your default branch.
-#
-# This workflow assumes you have already created the target Azure App Service web app.
-# For instructions see https://docs.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore?tabs=net60&pivots=development-environment-vscode
-#
-# To configure this workflow:
-#
-# 1. Download the Publish Profile for your Azure Web App. You can download this file from the Overview page of your Web App in the Azure Portal.
-#    For more information: https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
-#
-# 2. Create a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE, paste the publish profile contents as the value of the secret.
-#    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-#
-# 3. Change the value for the AZURE_WEBAPP_NAME. Optionally, change the AZURE_WEBAPP_PACKAGE_PATH and DOTNET_VERSION environment variables below.
-#
-# For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
-# For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
-
-name: test
+name: test2
 
 env:
+  API_PROJECT_NAME: gibbr.API
   WA_PROJECT_NAME: gibbr.Web
+  API_NAME: as-api-gibbr
   WA_NAME: as-wa-gibbr
   DOTNET_VERSION: '6.0'
+  DB_MASTER_PATH: gibbr.Data/Master
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  unit-test:
     runs-on: ubuntu-latest
+    name: Unit Testing
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - run: dotnet test
+      
+  scripting:
+    runs-on: windows-latest
+    needs: unit-test
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: DBMaster_Landing.sql
+        uses: Azure/sql-action@v1.2
+        with:
+          connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          sql-file: ${{ env.DB_MASTER_PATH }}/DBMaster_Landing.sql
+          
+  build-web:
+    runs-on: ubuntu-latest
+    needs: unit-test
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up .NET Core
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -47,30 +51,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Build with dotnet
+      - name: Build ${{env.WA_PROJECT_NAME}}
         run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Publish ${{env.WA_PROJECT_NAME}}
+        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.WA_PROJECT_NAME}}
 
-      - name: Upload artifact for deployment job
+      - name: Upload ${{env.WA_PROJECT_NAME}}
         uses: actions/upload-artifact@v3
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: ${{env.WA_PROJECT_NAME}}
+          path: ${{env.WA_PROJECT_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-web
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
+      - name: Download ${{env.WA_PROJECT_NAME}}
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
+          name: ${{env.WA_PROJECT_NAME}}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -78,4 +82,4 @@ jobs:
         with:
           app-name: ${{ env.WA_NAME }}
           publish-profile: ${{ secrets.AZURE_WA_PUBLISH_PROFILE }}
-          package: .
+          package: ${{env.WA_PROJECT_NAME}}
