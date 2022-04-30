@@ -1,4 +1,4 @@
-name: test2
+name: Release
 
 env:
   API_PROJECT_NAME: gibbr.API
