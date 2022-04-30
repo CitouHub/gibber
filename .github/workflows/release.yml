@@ -9,9 +9,6 @@ env:
   DB_MASTER_PATH: gibbr.Data/Master
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 jobs:
