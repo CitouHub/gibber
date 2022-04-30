@@ -26,7 +26,6 @@ jobs:
       - name: Azure SQL Deploy
         uses: Azure/sql-action@v1.2
         with:
-          server-name: SQL_SERVER_NAME
           connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
           sql-file: gibbr.Data/Master/DBMaster_Landing.sql
 
