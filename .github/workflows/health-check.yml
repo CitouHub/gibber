@@ -1,0 +1,42 @@
+name: Health check
+
+env:
+  DOTNET_VERSION: '6.0'
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    name: Unit Testing
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - run: dotnet test
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build solution
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+            
+      - name: Build
+        run: dotnet build --configuration Release
