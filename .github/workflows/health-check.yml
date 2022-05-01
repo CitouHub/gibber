@@ -1,5 +1,8 @@
 name: Health check
 
+env:
+  DOTNET_VERSION: '6.0'
+
 on:
   push:
     branches: [ master ]
@@ -15,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2.1.0
       - run: dotnet test
 
-build:
+  build:
     runs-on: ubuntu-latest
     name: Build solution
 
