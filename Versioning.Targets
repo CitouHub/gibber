@@ -12,8 +12,8 @@
       <Using Namespace="System"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[  
-if (VersionPrefix.Split('.').Length > 2)
-  throw new ArgumentException("Version should only be set with Major.Minor, rest is generated");
+if (VersionPrefix.Split('.').Length > 3)
+  throw new ArgumentException("Version should only be set with Major.Minor.Build, rest is generated");
 
 // Return formatted version number [VersionPrefix].[BuildId]
 CalculatedVersion = string.Format("{0}.{1}", VersionPrefix, BuildId);
