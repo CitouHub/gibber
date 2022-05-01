@@ -4,9 +4,11 @@ export function setApplicationSettings(appSettings) {
 
 export function setUserPosition(x, y) {
     let user = getUser();
-    user.x = x;
-    user.y = y;
-    setUser(user);
+    if (user) {
+        user.x = x;
+        user.y = y;
+        setUser(user);
+    }
 }
 
 export function setUser(user) {

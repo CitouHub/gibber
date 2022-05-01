@@ -18,6 +18,14 @@ const App = () => {
             if (!Config.getUser()) {
                 Config.newUser();
             }
+
+            let route = window.location.href.split('/');
+            let x = route[route.length - 1];
+            let y = route[route.length - 2];
+            if (x && y && /^\d+$/.test(x) && /^\d+$/.test(y)) {
+                Config.setUserPosition(parseInt(x, 10), parseInt(y, 10));
+            }
+
             setLoading(false);
         });
     }, []);
@@ -25,7 +33,7 @@ const App = () => {
     if (loading === false) {
         return (
             <Layout>
-                <Route exact path='/' component={BoardView} />
+                <Route path='/' component={BoardView} />
             </Layout>
         );
     } else {

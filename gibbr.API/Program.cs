@@ -36,6 +36,7 @@ builder.Services.AddSingleton<ISetBoardCellQueue, SetBoardCellQueue>();
 builder.Services.AddSingleton<IBoardHubClientManager, BoardHubClientManager>();
 builder.Services.AddScoped<IBoardService, BoardService>();
 builder.Services.AddHostedService<UpdateBoardBackgroundService>();
+builder.Services.AddHostedService<DatabaseMigrationBackgroundService>();
 
 var app = builder.Build();
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-using gibbr.API.Controllers;
+using gibbr.API.Controller;
 using gibbr.API.Infrastructure;
 using gibbr.Domain;
 using gibbr.Service;

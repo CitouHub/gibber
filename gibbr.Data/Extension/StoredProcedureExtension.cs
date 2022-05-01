@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using gibbr.Data.ComplexModel;
 using gibbr.Data.TypeModel;
+using gibbr.Common;
 
 #pragma warning disable IDE1006 // Naming Styles
 namespace gibbr.Data.Extension
@@ -24,7 +25,7 @@ namespace gibbr.Data.Extension
 
         public static async Task<bool> sp_addBoardCellAsync(this GibbrDbContext context, long x, long y, string? userId, string? letter)
         {
-            var expr = $"exec sp_addBoardCell {x}, {y}, '{userId}', '{Escape(letter)}{letter}'";
+            var expr = $"exec sp_addBoardCell {x}, {y}, '{userId}', '{LetterFormat.Escape(letter)}{letter}'";
 
             var result = (await context.Set<BoolResult>().FromSqlRaw(expr).ToArrayAsync())?.FirstOrDefault()?.Result;
             return result ?? false;
@@ -32,31 +33,10 @@ namespace gibbr.Data.Extension
 
         public static async Task<bool> sp_updateBoardCellAsync(this GibbrDbContext context, long x, long y, string? letter)
         {
-            var expr = $"exec sp_updateBoardCell {x}, {y}, '{Escape(letter)}{letter}'".ToString();
+            var expr = $"exec sp_updateBoardCell {x}, {y}, '{LetterFormat.Escape(letter)}{letter}'".ToString();
 
             var result = (await context.Set<BoolResult>().FromSqlRaw(expr).ToArrayAsync())?.FirstOrDefault()?.Result;
             return result ?? false;
-        }
-
-        private static string Escape(string? letter)
-        {
-            if(letter is not null)
-            {
-                if(letter == "\'")
-                {
-                    return "\'";
-                }
-                if (letter == "{")
-                {
-                    return "{";
-                }
-                if (letter == "}")
-                {
-                    return "}";
-                }
-            }
-
-            return "";
         }
     }
 }

@@ -3,7 +3,7 @@ using gibbr.Domain;
 using gibbr.Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace gibbr.API.Controllers
+namespace gibbr.API.Controller
 {
     [ApiController]
     [Route("[controller]")]

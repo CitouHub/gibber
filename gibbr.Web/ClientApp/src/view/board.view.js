@@ -125,6 +125,7 @@ const BoardView = () => {
         position.caret.x = x;
         position.caret.y = y;
         document.title = `gibbr ${x + frame.ix} : ${y + frame.iy}`;
+        window.history.replaceState('', document.title, `${x + frame.ix}/${y + frame.iy}`);
         Config.setUserPosition(x + frame.ix, y + frame.iy);
         renderCaret(x, y);
     }
