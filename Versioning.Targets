@@ -12,7 +12,7 @@
       <Using Namespace="System"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[  
-if (VersionPrefix.Split('.').Length > 2)
+if (VersionPrefix.Split('.').Length > 3)
   throw new ArgumentException("Version should only be set with Major.Minor, rest is generated");
 
 // Return formatted version number [VersionPrefix].[BuildId]
