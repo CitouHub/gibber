@@ -65,10 +65,11 @@ CalculatedInformalVersion = string.Format("{0} BuildId:{2} Tag:{3} Commit:{4} {1
     <Message Importance="High" Text="Setting version to '$(CalculatedVersion)' with supplied buildid '$(BuildId)' and tag '$(BuildTag)'" />
 
     <PropertyGroup>
-      <PackageVersion>$(CalculatedVersion)</PackageVersion>
-      <AssemblyVersion>$(CalculatedVersion)</AssemblyVersion>
-      <FileVersion>$(CalculatedVersion)</FileVersion>
-      <InformationalVersion>$(CalculatedInformalVersion)</InformationalVersion>
+	  <Version>$(BuildTag)</Version>
+      <PackageVersion>$(BuildTag)</PackageVersion>
+      <AssemblyVersion>$(BuildTag)</AssemblyVersion>
+      <FileVersion>$(BuildTag)</FileVersion>
+      <InformationalVersion>$(BuildTag)</InformationalVersion>
     </PropertyGroup>
   </Target>
 </Project>
