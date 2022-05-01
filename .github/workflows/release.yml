@@ -7,6 +7,9 @@ env:
   WA_NAME: as-wa-gibbr
   DOTNET_VERSION: '6.0'
   DB_MASTER_PATH: gibbr.Data/Master
+  RELEASE_TAG_INPUT: ${{ github.event.release.tag_name }}
+  BUILD_ID: ${{ github.run_number }}
+  COMMIT_ID: ${{ github.sha }}
 
 on:
   release:
@@ -42,7 +45,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build ${{env.WA_PROJECT_NAME}}
-        run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release
+        run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release --build-arg commit_id=$COMMIT_ID --build-arg build_id=$BUILD_ID --build-arg build_tag=$RELEASE_TAG_INPUT
 
       - name: Publish ${{env.WA_PROJECT_NAME}}
         run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/${{env.WA_PROJECT_NAME}}
@@ -75,7 +78,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build ${{env.API_PROJECT_NAME}}
-        run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release
+        run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release --build-arg commit_id=$COMMIT_ID --build-arg build_id=$BUILD_ID --build-arg build_tag=$RELEASE_TAG_INPUT
 
       - name: Publish ${{env.API_PROJECT_NAME}}
         run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/${{env.API_PROJECT_NAME}}
