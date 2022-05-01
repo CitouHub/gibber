@@ -109,7 +109,7 @@ namespace gibbr.API.BackgroundService
             }
 
             //Insert the version, replace the '#' character
-            var versionLetters = typeof(Program)?.Assembly?.GetName()?.Version?.ToString();
+            var versionLetters = typeof(Program).GetReleaseTag()?.ToCharArray();
             if (versionLetters is not null && versionX is not null && versionY is not null)
             {
                 x = versionX.Value;
