@@ -1,0 +1,16 @@
+name: Health check
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    name: Unit Testing
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - run: dotnet test
