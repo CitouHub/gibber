@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 
 namespace gibbr.API.Util
 {
@@ -50,9 +49,8 @@ namespace gibbr.API.Util
         /// <returns>Build information appended at compile time</returns>
         public static string? GetReleaseTag(this Type type)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            var productVersion = fileVersionInfo.ProductVersion;
+            var versionInfo = FileVersionInfo.GetVersionInfo(type.Assembly.Location);
+            var productVersion = versionInfo.ProductVersion;
             var tag = productVersion?[(productVersion.IndexOf("Tag:") + "Tag:".Length)..];
             tag = tag?[..tag.IndexOf(" ")];
 
