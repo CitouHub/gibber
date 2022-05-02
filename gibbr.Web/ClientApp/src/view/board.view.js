@@ -352,6 +352,8 @@ const BoardView = () => {
         setGoToOpen(false);
         setAltGrDown(false);
         setCtrlDown(false);
+        drag.mouseDown = false;
+        drag.enabled = true;
     }
 
     useEffect(() => {
@@ -362,7 +364,7 @@ const BoardView = () => {
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("paste", handlePaste);
-        window.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("focus", handleVisibilityChange);
         return () => {
             window.removeEventListener("wheel", handleZoom);
             window.removeEventListener("keydown", handleKeyDown);
@@ -370,7 +372,7 @@ const BoardView = () => {
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("paste", handlePaste);
-            window.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("focus", handleVisibilityChange);
         };
     }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp, handlePaste]);
 

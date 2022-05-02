@@ -22,14 +22,22 @@ const GotoDialog = ({ open, goTo, close }) => {
 
     const checkEnter = (e) => {
         if (isEnter(e)) {
-            goTo(parseInt(x), parseInt(y));
+            handleGoTo();
+        }
+    }
+
+    const handleGoTo = () => {
+        let parsedX = parseInt(x);
+        let parsedY = parseInt(y);
+        if (!isNaN(parsedX) && !isNaN(parsedY)) {
+            goTo(parsedX, parsedY);
         }
     }
 
     const handleInput = (newValue, oldValue) => {
         for (var i = 0; i < newValue.length; i++) {
             let charCode = newValue.charCodeAt(i);
-            if (charCode < 48 || charCode > 57) {
+            if (!(charCode === 45 && i === 0) && (charCode < 48 || charCode > 57)) {
                 return oldValue
             }
         }
@@ -63,7 +71,7 @@ const GotoDialog = ({ open, goTo, close }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={close}>Close</Button>
-                    <Button onClick={() => goTo(parseInt(x), parseInt(y))}>Go</Button>
+                    <Button onClick={handleGoTo}>Go</Button>
                 </DialogActions>
             </Dialog>
         </div>
