@@ -44,12 +44,15 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+            
+      - name: Clean ${{env.WA_PROJECT_NAME}}
+        run: dotnet clean
 
       - name: Build ${{env.WA_PROJECT_NAME}}
-        run: dotnet build ${{env.WA_PROJECT_NAME}} --configuration Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT
+        run: dotnet build ${{env.WA_PROJECT_NAME}} -c Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT
 
       - name: Publish ${{env.WA_PROJECT_NAME}}
-        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/${{env.WA_PROJECT_NAME}}
+        run: dotnet publish ${{env.WA_PROJECT_NAME}} -c Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT -o ${{env.DOTNET_ROOT}}/${{env.WA_PROJECT_NAME}}
 
       - name: Upload ${{env.WA_PROJECT_NAME}}
         uses: actions/upload-artifact@v3
@@ -79,11 +82,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      - name: Clean ${{env.API_PROJECT_NAME}}
+        run: dotnet clean
+
       - name: Build ${{env.API_PROJECT_NAME}}
-        run: dotnet build ${{env.API_PROJECT_NAME}} --configuration Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT
+        run: dotnet build ${{env.API_PROJECT_NAME}} -c Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT
 
       - name: Publish ${{env.API_PROJECT_NAME}}
-        run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -o ${{env.DOTNET_ROOT}}/${{env.API_PROJECT_NAME}}
+        run: dotnet publish ${{env.API_PROJECT_NAME}} -c Release -p:Version=$RELEASE_TAG_INPUT -p:CommitId=$COMMIT_ID -p:BuildId=$BUILD_ID -p:BuildTag=$RELEASE_TAG_INPUT -o ${{env.DOTNET_ROOT}}/${{env.API_PROJECT_NAME}}
 
       - name: Upload ${{env.API_PROJECT_NAME}}
         uses: actions/upload-artifact@v3
