@@ -89,7 +89,6 @@ const BoardView = () => {
             triggerUpdate(false);
             let unsavedChanges = BoardService.getUnsavedChanges();
             BoardService.getBoardCells(frame.ox, frame.oy, frame.dx, frame.dy).then((result) => {
-
                 unsavedChanges.forEach(_ => {
                     let cell = result.find(c => c.x === _.x && c.y === _.y);
                     let cellIndex = result.indexOf(cell);
@@ -301,7 +300,7 @@ const BoardView = () => {
                 drag.frameChanged = true;
             }
             if (drag.frameChanged === true) {
-                content.current.className = 'canvas-mouse-grab';
+                content.current.className = 'full-size canvas-mouse-grab';
 
                 clearBoard();
                 updateGrid();
@@ -317,7 +316,7 @@ const BoardView = () => {
 
     const handleMouseUp = useCallback(() => {
         drag.mouseDown = false;
-        content.current.className = 'canvas-mouse-normal';
+        content.current.className = 'full-size canvas-mouse-normal';
         if (drag.frameChanged === true) {
             triggerUpdate(true);
         }
