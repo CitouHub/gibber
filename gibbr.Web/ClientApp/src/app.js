@@ -20,8 +20,8 @@ const App = () => {
             }
 
             let route = window.location.href.split('/');
-            let x = route[route.length - 1];
-            let y = route[route.length - 2];
+            let x = route[route.length - 2];
+            let y = route[route.length - 1];
             if (x && y && /^\d+$/.test(x) && /^\d+$/.test(y)) {
                 Config.setUserPosition(parseInt(x, 10), parseInt(y, 10));
             }

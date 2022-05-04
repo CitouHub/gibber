@@ -89,24 +89,26 @@ const BoardView = () => {
             triggerUpdate(false);
             let unsavedChanges = BoardService.getUnsavedChanges();
             BoardService.getBoardCells(frame.ox, frame.oy, frame.dx, frame.dy).then((result) => {
-                unsavedChanges.forEach(_ => {
-                    let cell = result.find(c => c.x === _.x && c.y === _.y);
-                    let cellIndex = result.indexOf(cell);
-                    result.splice(cellIndex, 1);
-                });
-                board.cells = result.concat(unsavedChanges);
-                board.cells.forEach(_ => {
-                    _.vx = _.x - frame.ix;
-                    _.vy = _.y - frame.iy;
-                    _.r = false;
-                });
+                if (result) {
+                    unsavedChanges.forEach(_ => {
+                        let cell = result.find(c => c.x === _.x && c.y === _.y);
+                        let cellIndex = result.indexOf(cell);
+                        result.splice(cellIndex, 1);
+                    });
+                    board.cells = result.concat(unsavedChanges);
+                    board.cells.forEach(_ => {
+                        _.vx = _.x - frame.ix;
+                        _.vy = _.y - frame.iy;
+                        _.r = false;
+                    });
 
-                clearBoard();
-                updateBoard();
-                connectBoardHub();
-                updatePosition(position.caret.x, position.caret.y);
+                    clearBoard();
+                    updateBoard();
+                    connectBoardHub();
+                    updatePosition(position.caret.x, position.caret.y);
+                }
+
                 setGoToOpen(false);
-
                 drag.enabled = true;
                 board.input.enabled = true;
             });

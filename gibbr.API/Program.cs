@@ -1,12 +1,15 @@
+using System.Text.Json.Serialization;
+
+using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+
 using gibbr.API.BackgroundService;
 using gibbr.API.Infrastructure;
+using gibbr.API.Middleware;
 using gibbr.API.SignalR;
 using gibbr.Data;
 using gibbr.Domain;
 using gibbr.Service;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -21,6 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GibbrDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
 builder.Services.AddDbContext<BaseDbContext>(options => options.UseSqlServer(configuration.GetValue<string>("ConnectionString")));
 builder.Services.AddSignalR();
+builder.Services.AddMemoryCache();
 builder.Services.AddMvc()
 .AddJsonOptions(options =>
 {
@@ -55,6 +59,7 @@ app.UseCors(builder => builder
     .AllowAnyHeader()
     .AllowCredentials());
 
+app.UseRateLimiting();
 app.UseRouting();
 app.UseEndpoints(_ => _.MapHub<BoardHub>("/hubs/board"));
 app.MapControllers();

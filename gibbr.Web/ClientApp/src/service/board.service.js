@@ -12,6 +12,8 @@ export async function getBoardCells(x, y, dx, dy) {
         method: 'GET'
     }).then((response) => {
         return Request.handleResponse(response)
+    }).catch((error) => {
+        console.log(error);
     });
 }
 
@@ -23,6 +25,8 @@ export async function saveBoardCells(boardCells) {
         method: 'PUT'
     }).then((response) => {
         return Request.handleResponse(response)
+    }).catch((error) => {
+        console.log(error);
     });
 }
 
@@ -30,7 +34,7 @@ export function bufferSaveBoardCell(boardCell, saveBufferMaxSize) {
     if (boardCell) {
         saveBuffer.push(boardCell);
         clearTimeout(saveTimer);
-        if (saveBuffer.length >= saveBufferMaxSize ?? saveSettings.saveBufferMaxSize) {
+        if (saveBuffer.length >= (saveBufferMaxSize ?? saveSettings.saveBufferMaxSize)) {
             flushSaveBuffer();
         } else {
             saveTimer = setTimeout(() => flushSaveBuffer(), saveSettings.saveTimeTrigger)
