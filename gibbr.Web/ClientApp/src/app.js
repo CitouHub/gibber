@@ -13,6 +13,14 @@ const App = () => {
 
     useEffect(() => {
         setLoading(true);
+
+        let user = Config.getUser();
+        if (user) {
+            document.title = `gibbr ${user.x} : ${user.y}`;
+        } else {
+            document.title = `gibbr 0 : 0`;
+        }
+
         AppSettingsService.get().then((result) => {
             Config.setApplicationSettings(result);
             if (!Config.getUser()) {
@@ -37,7 +45,8 @@ const App = () => {
             </Layout>
         );
     } else {
-        return (<p>Loading...</p>);
+        document.title = `Loading...`;
+        return null;
     }
 }
 
