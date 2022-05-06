@@ -1,4 +1,4 @@
-﻿DELETE BoardCell WHERE X >= -43 AND X <= 43 AND Y >= -23 AND Y <= 12
+﻿DELETE BoardCell WHERE X >= -43 AND X <= 44 AND Y >= -23 AND Y <= 11
 
 DECLARE @I TABLE(I INT NOT NULL)
 INSERT INTO @I
@@ -9,5 +9,5 @@ ORDER BY 1
 
 INSERT INTO BoardCell (X, Y, Letter, UserId)
 SELECT X.I - 43, Y.I - 23, '.', 'Landing' FROM @I AS X
-	INNER JOIN @I AS Y ON Y.I <= 35
-WHERE X.I <= 86
+	INNER JOIN @I AS Y ON Y.I <= 34
+WHERE X.I <= 87
