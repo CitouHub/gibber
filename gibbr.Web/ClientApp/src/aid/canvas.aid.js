@@ -24,8 +24,8 @@ export function updateBoard() {
         var ctx = board.canvas.current.getContext("2d");
         ctx.font = getFont(board.zoom);
         changedCells.forEach(_ => {
-            clearBoardCell(ctx, _.vx, _.vy, board.zoom);
-            renderCell(ctx, _.l, _.vx, _.vy, board.zoom)
+            clearBoardCell(ctx, _.vx, _.vy);
+            renderCell(ctx, _.l, _.vx, _.vy)
             //ctx.beginPath();
             //ctx.rect(_.vx * (zoomLevel * render.widthFactor), (_.vy * zoomLevel), zoomLevel * render.widthFactor, zoomLevel);
             //ctx.stroke();
@@ -69,7 +69,7 @@ export function renderCaret(x, y) {
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(startX + 1, startY);
-    ctx.lineTo(startX + 1, startY + board.zoom);
+    ctx.lineTo(startX + 1, startY + board.zoom); 
     ctx.closePath();
     ctx.strokeStyle = '#000000';
     ctx.stroke();

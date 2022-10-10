@@ -312,13 +312,16 @@ const BoardView = () => {
                     _.r = false;
                 });
                 updateBoard();
+                drag.frameChanged = false;
             }
         }
     }, [updateGrid])
 
     const handleMouseUp = useCallback(() => {
         drag.mouseDown = false;
-        content.current.className = 'full-size canvas-mouse-normal';
+        if (content !== null && content.current !== null) {
+            content.current.className = 'full-size canvas-mouse-normal';
+        }
         if (drag.frameChanged === true) {
             triggerUpdate(true);
         }
@@ -350,6 +353,45 @@ const BoardView = () => {
         }
     }, [goToOpen])
 
+    const handleDoubleClick = useCallback((e) => {
+        let x = position.caret.x;
+        let y = position.caret.y;
+
+        var fullLine = board.cells.filter(_ => _.vy === y).map(_ => _.l).join('');
+        if (fullLine.includes('http://') || fullLine.includes('https://') || fullLine.includes('www.')) {
+
+            var text = '';
+
+            var fromX = Math.min(...board.cells.filter(_ => _.vy === y).map(_ => _.vx));
+            var toX = Math.max(...board.cells.filter(_ => _.vy === y).map(_ => _.vx));
+
+            for (let i = x; i >= fromX; i--) {
+                let cell = board.cells.find(_ => _.vx === i && _.vy === y);
+                if (cell !== undefined && cell.l !== '') {
+                    text = cell.l + text;
+                } else {
+                    break;
+                }
+            }
+
+            for (let i = x + 1; i <= toX; i++) {
+                let cell = board.cells.find(_ => _.vx === i && _.vy === y);
+                if (cell !== undefined && cell.l !== '') {
+                    text = text + cell.l;
+                } else {
+                    break;
+                }
+            }
+
+            if ((text.startsWith('http://') || text.startsWith('https://') || text.startsWith('www.')) && text.includes('.')) {
+                if (text.startsWith('www.')) {
+                    text = 'https://' + text;
+                }
+                window.open(text, "_blank");
+            }
+        }
+    }, []);
+
     const handleVisibilityChange = () => {
         setGoToOpen(false);
         setAltGrDown(false);
@@ -365,6 +407,7 @@ const BoardView = () => {
         window.addEventListener("mousedown", handleMouseDown);
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
+        window.addEventListener("dblclick", handleDoubleClick);
         window.addEventListener("paste", handlePaste);
         window.addEventListener("focus", handleVisibilityChange);
         return () => {
@@ -373,10 +416,12 @@ const BoardView = () => {
             window.removeEventListener("keyup", handleKeyUp);
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener("dblclick", handleDoubleClick);
             window.removeEventListener("paste", handlePaste);
             window.removeEventListener("focus", handleVisibilityChange);
         };
-    }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp, handlePaste]);
+    }, [handleKeyDown, handleKeyUp, handleZoom, handleMouseDown, handleMouseMove, handleMouseUp, handleDoubleClick, handlePaste]);
 
     return (
         <div className='full-size' ref={content}>
