@@ -54,7 +54,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(builder => builder
-    .WithOrigins(configuration.GetValue<string>("Cors:Origin"))
+    .WithOrigins(configuration.GetValue<string>("Cors:Origins").Split(";"))
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());
